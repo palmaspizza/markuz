@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Música | Portfolio Artista</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #FFD700;
+      --bg-dark: #0a0a0a;
+      --card-bg: #1a1a1a;
+      --spotify: rgb(0, 0, 0);
+      --apple: #ffffff;
+      --youtube: #FF0000;
+      --soundcloud: #ca5b00;
+      --audiomack: #e65100;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: #fff;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      color: #888;
+      margin-bottom: 50px;
+      font-size: 1.1rem;
+    }
+
+    /* Contenedor principal de álbumes */
+    #albumes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .album {
+      background: #3b70225d;
+      border-radius: 20px;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: 1px solid #333;
+      position: relative;
+    }
+
+    .album:hover {
+     background: rgba(255, 0, 0, 0.13);
+      transform: translateY(-10px);
+      border-color: lch(49.24% 0.01 296.81);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+
+    .album img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      filter: grayscale(20%);
+      transition: 0.4s;
+    }
+
+    .album:hover img {
+      filter: grayscale(0%);
+    }
+
+    .album-info {
+      padding: 25px;
+      text-align: left;
+    }
+
+    .album h3 {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .album p {
+      color: #fff;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+
+    /* Botones de plataformas */
+    .botones {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: 0.3s;
+    }
+
+    .btn.spotify {
+      order: 1;
+    }
+
+    .btn.apple {
+      order: 2;
+    }
+
+    .btn.soundcloud {
+      order: 3;
+    }
+
+    .btn.youtube {
+      order: 4;
+    }
+
+    .btn.audiomack {
+      order: 5;
+    }
+
+    #soundcloud-22 {
+      display: none;
+    }
+
+    .btn img {
+      height: 18px;
+      width: auto;
+      filter: none !important;
+    }
+
+    .spotify { background: var(--spotify); color: white; border: 2px solid #000;}
+    .apple { background: var(--apple); color: black; }
+    .youtube { background: var(--youtube); color: white; }
+    .soundcloud { background: var(--soundcloud); color: white; }
+    .audiomack { background: var(--audiomack); color: white; }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+
+    /* Decoración de fondo */
+    .bg-glow {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255,215,0,0.05) 0%, rgba(0,0,0,0) 70%);
+      z-index: -1;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      #albumes { grid-template-columns: 1fr; }
+    }
+    .perfil {
+  background: #2c2c2c;
+  border: 1px solid #444;
+  border-radius: 12px;
+  padding: 20px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+}
+
+.perfil img {
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border: 2px solid #FFD700;
+}
+
+.nombre {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.badge {
+  display: inline-block;
+  background: silver;
+  color: #000;
+  font-size: 0.8em;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-left: 8px;
+}
+
+.estado {
+  margin-top: 5px;
+  font-style: italic;
+  color: green;
+
+}
+
+.gif img {
+  margin-top: 15px;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid red;
+}
+.perfil-card {
+  background: linear-gradient(135deg, #000 60%, #8B0000 100%) !important;
+  border-radius: 12px;
+  padding: 15px;
+  width: 320px;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+  position: relative;
+  margin-top: -120px;
+}
+
+.perfil-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.perfil-foto {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%; /* foto redonda */
+  border: 2px solid #750000; /* borde dorado */
+  object-fit: cover;
+}
+
+.perfil-info {
+  flex-grow: 1;
+  margin-left: 15px;
+}
+
+.nombre {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.badge {
+  background: #1a2e2b;
+  color: #fff;
+  font-size: 0.8em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-left: 8px;
+}
+
+.estado {
+  font-style: italic;
+  color: #FFD700;
+  margin-top: 5px;
+  margin-left: -128px;
+}
+
+.online-dot {
+  width: 12px;
+  height: 12px;
+  background: #00ff00; /* verde online */
+  border-radius: 50%;
+  border: 2px solid #111;
+}
+ /* Animación de entrada suave */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación de pulso para el indicador online */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0,255,0,0.7);
+  }
+  70% {
+    transform: scale(1.2);
+    box-shadow: 0 0 10px 10px rgba(0,255,0,0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0,255,0,0);
+  }
+}
+
+/* Animación de brillo para el badge */
+@keyframes shine {
+  0% { background-position: -100px; }
+  100% { background-position: 200px; }
+}
+
+/* Animación de rebote para los íconos */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.perfil-card {
+  background: linear-gradient(135deg, #3a0a0a, #1a1a1a);
+  border-radius: 15px;
+  padding: 20px;
+  width: 350px;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+  position: relative;
+  animation: fadeInUp 1s ease forwards;
+}
+
+.online-dot {
+  width: 14px;
+  height: 14px;
+  background: #00ff00;
+  border-radius: 50%;
+  border: 2px solid #111;
+  animation: pulse 2s infinite;
+}
+
+.badge {
+  background: linear-gradient(90deg, #2e0000, #ff9999);
+  color: #fff;
+  font-size: 0.8em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-top: 5px;
+  display: inline-block;
+  background-size: 200px;
+  animation: shine 3s linear infinite;
+}
+
+.social-icons img {
+  width: 28px;
+  height: 28px;
+  transition: transform 0.3s ease;
+  animation: bounce 2s infinite;
+}
+
+.social-icons img:hover {
+  transform: scale(1.3) rotate(10deg);
+} </style>
+</head>
+<body>
+
+  <div class="bg-glow"></div>
+
+<header class="music-header">
+  <div class="image-container">
+    <img src="https://r2.guns.lol/044c7f8b-42e9-4a81-ac6a-2b117361d3f8.webp" >
+  </div>
+  <h1 style="text-shadow: 0px 0px 5px #ffffffbd;font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">Escucha nuestra música</h1>
+  MARKUZ
+  <p class="subtitle">Disponible en todas las plataformas digitales</p>
+</header>
+
+<style>
+  /* Estilo general del header */
+  .music-header {
+    text-align: center;
+    margin-bottom: 60px;
+    color: #fff;
+    background: linear-gradient(135deg, #000 60%, #8B0000 100%);
+    padding: 50px 20px;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Imagen circular */
+  .music-header .image-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+    position: relative;
+    z-index: 1;
+    animation: zoomIn 1.5s ease-out;
+  }
+
+  .music-header img {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 4px solid #ff0000;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+    transition: transform 0.5s ease, box-shadow 0.5s ease;
+  }
+
+  /* Hover interactivo */
+  .music-header img:hover {
+    transform: scale(1.1) rotate(3deg);
+    box-shadow: 0 0 30px rgba(255,0,0,0.8);
+  }
+
+  /* Título principal */
+  .music-header h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #ff0000;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    animation: fadeInDown 1.5s ease-out;
+  }
+
+  /* Subtítulo */
+  .music-header .subtitle {
+    font-size: 1.2rem;
+    color: #ffffff;
+    margin-top: 10px;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
+    animation: fadeInUp 2s ease-out;
+  }
+
+  /* Animaciones */
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes zoomIn {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
+  }
+</style>
+<style>
+  /* Estilo general del header */
+  .music-header {
+    text-align: center;
+    margin-bottom: 60px;
+    color: #fff;
+    background: linear-gradient(135deg, #000 60%, #8B0000 100%);
+    padding: 40px 20px;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Animación de fondo con efecto sutil */
+  .music-header::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, #000 0%, transparent 70%);
+    animation: pulse 8s infinite alternate;
+    z-index: 0;
+  }
+
+  /* Título principal */
+  .music-header h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #ff0000;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    animation: fadeInDown 1.5s ease-out;
+  }
+
+  /* Subtítulo */
+  .music-header .subtitle {
+    font-size: 1.2rem;
+    color: #ffffff;
+    margin-top: 10px;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
+    animation: fadeInUp 2s ease-out;
+  }
+
+  /* Animaciones */
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    from { transform: scale(1); opacity: 0.4; }
+    to { transform: scale(1.2); opacity: 0.7; }
+  }
+</style>
+<center>
+    <div class="perfil-card">
+  <div class="perfil-header">
+    <img src="ice-cube.gif"  class="perfil-foto">
+    <div class="perfil-info">
+      <div class="nombre">
+        @chiefmarkuz <span class="badge">22 🍀</span>
+      </div>
+      <div class="estado">Cooking...</div>
+    </div>
+    <span class="online-dot"></span>
+  </div>
+</div>
+</center><br><br>
+
+  <section id="albumes">
+       <div class="album">
+      <img src="og_version.webp">
+      <div class="album-info">
+        <center>
+            <h1>! <p style="color: rgb(129, 3, 3);">(og version)</p></h1>
+        </center>
+        <p>El nuevo lanzamiento que define nuestra esencia callejera.</p>
+        <div class="botones">
+          <a href="https://soundcloud.com/chiefmarkuz/sets/og-version-2" target="_blank" class="btn soundcloud">
+            <img src="https://cdn-icons-png.flaticon.com/512/145/145809.png">
+            SoundCloud
+          </a>
+          <a href="https://open.spotify.com/intl-es/album/74i5rDIczclwTrNIkBK5V9" target="_blank" class="btn spotify">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/250px-Spotify_logo_without_text.svg.png">
+            Spotify
+          </a>
+          <a href="https://music.apple.com/us/album/og-version-ep/1839965651?l=es-MX" target="_blank" class="btn apple">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwLts3sFLUMxJ09VW_4A8ncpIAlbd-8BPOAQ&s">
+            Apple Music
+          </a>
+          <a href="https://music.youtube.com/playlist?list=OLAK5uy_mxcmR-wf_H_5HyD4kFMFdm7l45VU6jQEI&si=3T92_xLIeft1NeD7" target="_blank" class="btn youtube">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png" style="height:14px">
+            YouTube
+          </a>
+          <a href="https://audiomack.com/markuz-11/album/og-version" target="_blank" class="btn audiomack">
+            <img src="data:image/png;base64,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">
+            Audiomack
+          </a>
+        </div>
+      </div>
+    </div>
+      <div class="album">
+      <img src="Imagen10.webp">
+      <div class="album-info">
+        <h1>22</h1>
+        <p>El nuevo lanzamiento que define nuestra esencia callejera.</p>
+        <div class="botones">
+          <a href="#" target="_blank" class="btn soundcloud" id="soundcloud-22">
+            <img src="https://cdn-icons-png.flaticon.com/512/145/145809.png">
+            SoundCloud
+          </a>
+          <a href="https://open.spotify.com/intl-es/album/15FpFgcOZP1Cgoysv8fzki" target="_blank" class="btn spotify">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/250px-Spotify_logo_without_text.svg.png">
+            Spotify
+          </a>
+          <a href="https://music.apple.com/us/album/22/1859833585?l=es-MX" target="_blank" class="btn apple">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwLts3sFLUMxJ09VW_4A8ncpIAlbd-8BPOAQ&s">
+            Apple Music
+          </a>
+          <a href="https://music.youtube.com/playlist?list=PL-WwyGma8aP3r0LX7sh8me-YpzjnxenzM" target="_blank" class="btn youtube">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png" style="height:14px">
+            YouTube
+          </a>
+          <a href="https://audiomack.com/markuz-11/album/22" target="_blank" class="btn audiomack">
+            <img src="data:image/png;base64,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">
+            Audiomack
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="album">
+      <img src="foto1.webp" >
+      <div class="album-info">
+        <h3>WAKE UP</h3>
+        <p>El nuevo lanzamiento que define nuestra esencia callejera.</p>
+        <div class="botones">
+          <a href="https://soundcloud.com/chiefmarkuz/sets/5xq4fq5w5rwx" target="_blank" class="btn soundcloud">
+            <img src="https://cdn-icons-png.flaticon.com/512/145/145809.png">
+            SoundCloud
+          </a>
+          <a href="https://open.spotify.com/intl-es/album/0kaCjsEOZARXF4M7jziEHR" target="_blank" class="btn spotify">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/250px-Spotify_logo_without_text.svg.png">
+            Spotify
+          </a>
+          <a href="https://music.apple.com/us/album/1844419910?l=es-MX" target="_blank" class="btn apple">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwLts3sFLUMxJ09VW_4A8ncpIAlbd-8BPOAQ&s">
+            Apple Music
+          </a>
+          <a href="https://music.youtube.com/playlist?list=OLAK5uy_nGGwaL5niGwIrqMompOYxQsJ5XxvPFDNQ" target="_blank" class="btn youtube">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png" style="height:14px">
+            YouTube
+          </a>
+          <a href="https://audiomack.com/markuz-11/album/68e3f965a4f26" target="_blank" class="btn audiomack">
+            <img src="data:image/png;base64,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">
+            Audiomack
+          </a>
+        </div>
+      </div>
+    </div>
+
+     <div class="album">
+      <img src="foto2.webp">
+      <div class="album-info">
+      <center>
+          <h1 style="color: #fff;">!</h1>
+      </center>
+        <p>El nuevo lanzamiento que define nuestra esencia callejera.</p>
+        <div class="botones">
+          <a href="#" target="_blank" class="btn soundcloud">
+            <img src="https://cdn-icons-png.flaticon.com/512/145/145809.png">
+            SoundCloud
+          </a>
+          <a href="#" target="_blank" class="btn spotify">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/250px-Spotify_logo_without_text.svg.png">
+            Spotify
+          </a>
+          <a href="#" target="_blank" class="btn apple">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwLts3sFLUMxJ09VW_4A8ncpIAlbd-8BPOAQ&s">
+            Apple Music
+          </a>
+          <a href="#" target="_blank" class="btn youtube">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png" style="height:14px">
+            YouTube
+          </a>
+          <a href="#" target="_blank" class="btn audiomack">
+            <img src="data:image/png;base64,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">
+            Audiomack
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+</body>
+</html>
