@@ -11,12 +11,16 @@
       text-align: center;
       padding: 20px;
     }
-    input {
+    input, textarea {
       width: 80%;
       padding: 10px;
       margin: 8px 0;
       border-radius: 6px;
       border: none;
+    }
+    textarea {
+      height: 80px;
+      resize: none;
     }
     button {
       padding: 12px 20px;
@@ -36,6 +40,11 @@
 <body>
   <h2>Generar Código del Álbum y Enviar por WhatsApp</h2>
 
+  <!-- Inputs para personalizar -->
+  <input type="text" id="foto" placeholder="Link de la foto del álbum/canción">
+  <input type="text" id="titulo" placeholder="Nombre del álbum o canción">
+  <textarea id="descripcion" placeholder="Descripción del álbum"></textarea>
+
   <input type="text" id="soundcloud" placeholder="Link de SoundCloud">
   <input type="text" id="spotify" placeholder="Link de Spotify">
   <input type="text" id="apple" placeholder="Link de Apple Music">
@@ -46,6 +55,10 @@
 
   <script>
     function enviarWhatsApp() {
+      const foto = document.getElementById('foto').value;
+      const titulo = document.getElementById('titulo').value;
+      const descripcion = document.getElementById('descripcion').value;
+
       const soundcloud = document.getElementById('soundcloud').value;
       const spotify = document.getElementById('spotify').value;
       const apple = document.getElementById('apple').value;
@@ -54,10 +67,10 @@
 
       const codigo = `
 <div class="album">
-  <img src="foto1.webp">
+  <img src="${foto}">
   <div class="album-info">
-    <h3>WAKE UP</h3>
-    <p>Mensajes de revolución, festejo, libertad de expresión y reflexión.</p>
+    <h3>${titulo}</h3>
+    <p>${descripcion}</p>
     <div class="botones">
       <a href="${soundcloud}" target="_blank" class="btn soundcloud">
         <img src="https://cdn-icons-png.flaticon.com/512/145/145809.png"> SoundCloud
