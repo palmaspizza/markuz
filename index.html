@@ -3,27 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Markuz | Albums</title>
-    <link rel="icon" type="image/x-icon" href="foto_artista_3.webp">
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-  <meta property="og:title" content="Markuz | Nuevo lanzamiento!">
-  <meta property="og:description" content="El nuevo lanzamiento que define nuestra esencia callejera.">
-  <meta property="og:image" content="foto_artista_3.webp">
-  <meta property="og:url" content="https://markuz.netlify.app/albums">
-
+  <title>Galería de Álbums</title>
   <style>
-    :root {
-      --primary: #FFD700;
-      --bg-dark: #0a0a0a;
-      --card-bg: #1a1a1a;
-      --spotify: rgb(0, 0, 0);
-      --apple: #ffffff;
-      --youtube: #FF0000;
-      --soundcloud: #ca5b00;
-      --audiomack: #e65100;
-    }
-
+    /* Reset */
     * {
       margin: 0;
       padding: 0;
@@ -31,644 +13,173 @@
     }
 
     body {
-      background-color: var(--bg-dark);
-      font-family: 'Inter', sans-serif;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #000000, #8B0000);
       color: #fff;
-      line-height: 1.6;
-      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
     }
 
-    h1 {
-      font-size: 3rem;
-      font-weight: 800;
-      letter-spacing: -1px;
+    /* Botón principal */
+    .btn-albums {
+      margin: 40px auto 20px auto;
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      font-size: 1.6rem;
+      font-weight: bold;
       color: #fff;
-      margin-bottom: 10px;
-      text-transform: uppercase;
+      background: linear-gradient(90deg, #ff0000, #000000);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 0 15px rgba(255,0,0,0.6);
     }
 
-    .subtitle {
-      color: #888;
-      margin-bottom: 50px;
-      font-size: 1.1rem;
+    .btn-albums:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 25px rgba(255,0,0,0.9);
     }
 
-    /* Contenedor principal de álbumes */
-    #albumes {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .album {
-      background: #3b70225d;
-      border-radius: 20px;
-      overflow: hidden;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      border: 1px solid #333;
-      position: relative;
-    }
-
-    .album:hover {
-     background: rgba(255, 0, 0, 0.13);
-      transform: translateY(-10px);
-      border-color: lch(49.24% 0.01 296.81);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-    }
-
-    .album img {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
-      filter: grayscale(20%);
-      transition: 0.4s;
-    }
-
-    .album:hover img {
-      filter: grayscale(0%);
-    }
-
-    .album-info {
-      padding: 25px;
-      text-align: left;
-    }
-
-    .album h3 {
-      font-size: 1.4rem;
-      margin-bottom: 8px;
+    /* Perfil Card */
+    .perfil-card {
+      background: linear-gradient(135deg, #1a1a1a, #3a0a0a);
+      border-radius: 15px;
+      padding: 20px;
+      width: 350px;
       color: #fff;
-      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      margin-bottom: 40px;
+      animation: fadeInUp 1s ease forwards;
     }
 
-    .album p {
-      color: #fff;
-      font-size: 0.95rem;
-      margin-bottom: 20px;
-    }
-
-    /* Botones de plataformas */
-    .botones {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-
-    .btn {
+    .perfil-header {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 12px;
-      padding: 12px;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.9rem;
-      transition: 0.3s;
+      justify-content: space-between;
     }
 
-    .btn.spotify {
-      order: 1;
+    .perfil-foto {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 2px solid #ff0000;
+      object-fit: cover;
     }
 
-    .btn.apple {
-      order: 2;
+    .perfil-info {
+      flex-grow: 1;
+      margin-left: 15px;
     }
 
-    .btn.soundcloud {
-      order: 3;
+    .nombre {
+      font-size: 1.2em;
+      font-weight: bold;
     }
 
-    .btn.youtube {
-      order: 4;
+    .badge {
+      background: linear-gradient(90deg, #2e0000, #ff9999);
+      color: #fff;
+      font-size: 0.8em;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-left: 8px;
+      animation: shine 3s linear infinite;
+      background-size: 200px;
     }
 
-    .btn.audiomack {
-      order: 5;
+    .estado {
+      font-style: italic;
+      color: #FFD700;
+      margin-top: 5px;
     }
 
-    #soundcloud-22 {
+    .online-dot {
+      width: 14px;
+      height: 14px;
+      background: #00ff00;
+      border-radius: 50%;
+      border: 2px solid #111;
+      animation: pulse 2s infinite;
+    }
+
+    /* Galería */
+    .gallery {
       display: none;
-    }
-
-    .btn img {
-      height: 18px;
-      width: auto;
-      filter: none !important;
-    }
-
-    .spotify { background: var(--spotify); color: white; border: 2px solid #000;}
-    .apple { background: var(--apple); color: black; }
-    .youtube { background: var(--youtube); color: white; }
-    .soundcloud { background: var(--soundcloud); color: white; }
-    .audiomack { background: var(--audiomack); color: white; }
-
-    .btn:hover {
-      opacity: 0.9;
-      transform: scale(1.02);
-    }
-
-    /* Decoración de fondo */
-    .bg-glow {
-      position: fixed;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
+      margin: 2rem auto;
+      max-width: 1200px;
       width: 100%;
-      height: 300px;
-      background: radial-gradient(circle, rgba(255,215,0,0.05) 0%, rgba(0,0,0,0) 70%);
-      z-index: -1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      padding: 1rem;
     }
 
+    .gallery img {
+      width: 100%;
+      height: auto;
+      border-radius: 15px;
+      border: 4px solid #ff0000;
+      box-shadow: 0 0 15px rgba(255,0,0,0.6);
+      transition: transform 0.3s ease;
+    }
+
+    .gallery img:hover {
+      transform: scale(1.05);
+    }
+
+    /* Animaciones */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,255,0,0.7); }
+      70% { transform: scale(1.2); box-shadow: 0 0 10px 10px rgba(0,255,0,0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,255,0,0); }
+    }
+
+    @keyframes shine {
+      0% { background-position: -100px; }
+      100% { background-position: 200px; }
+    }
+
+    /* Responsivo */
     @media (max-width: 600px) {
-      h1 { font-size: 2rem; }
-      #albumes { grid-template-columns: 1fr; }
+      .perfil-card { width: 100%; }
+      .btn-albums { font-size: 1.2rem; padding: 0.8rem 1.5rem; }
     }
-    .perfil {
-  background: #2c2c2c;
-  border: 1px solid #444;
-  border-radius: 12px;
-  padding: 20px;
-  width: 300px;
-  text-align: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-}
-
-.perfil img {
-  border-radius: 50%;
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border: 2px solid #FFD700;
-}
-
-.nombre {
-  font-size: 1.2em;
-  font-weight: bold;
-  margin-top: 10px;
-}
-
-.badge {
-  display: inline-block;
-  background: silver;
-  color: #000;
-  font-size: 0.8em;
-  padding: 4px 8px;
-  border-radius: 6px;
-  margin-left: 8px;
-}
-
-.estado {
-  margin-top: 5px;
-  font-style: italic;
-  color: green;
-
-}
-
-.gif img {
-  margin-top: 15px;
-  width: 100%;
-  border-radius: 10px;
-  border: 1px solid red;
-}
-.perfil-card {
-  background: linear-gradient(135deg, #000 60%, #8B0000 100%) !important;
-  border-radius: 12px;
-  padding: 15px;
-  width: 320px;
-  color: #fff;
-  font-family: 'Poppins', sans-serif;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-  position: relative;
-  margin-top: -120px;
-}
-
-.perfil-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.perfil-foto {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%; /* foto redonda */
-  border: 2px solid #750000; /* borde dorado */
-  object-fit: cover;
-}
-
-.perfil-info {
-  flex-grow: 1;
-  margin-left: 15px;
-}
-
-.nombre {
-  font-size: 1.2em;
-  font-weight: bold;
-}
-
-.badge {
-  background: #1a2e2b;
-  color: #fff;
-  font-size: 0.8em;
-  padding: 3px 8px;
-  border-radius: 6px;
-  margin-left: 8px;
-}
-
-.estado {
-  font-style: italic;
-  color: #FFD700;
-  margin-top: 5px;
-  margin-left: -128px;
-}
-
-.online-dot {
-  width: 12px;
-  height: 12px;
-  background: #00ff00; /* verde online */
-  border-radius: 50%;
-  border: 2px solid #111;
-}
- /* Animación de entrada suave */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Animación de pulso para el indicador online */
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(0,255,0,0.7);
-  }
-  70% {
-    transform: scale(1.2);
-    box-shadow: 0 0 10px 10px rgba(0,255,0,0);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(0,255,0,0);
-  }
-}
-
-/* Animación de brillo para el badge */
-@keyframes shine {
-  0% { background-position: -100px; }
-  100% { background-position: 200px; }
-}
-
-/* Animación de rebote para los íconos */
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-.perfil-card {
-  background: linear-gradient(135deg, #3a0a0a, #1a1a1a);
-  border-radius: 15px;
-  padding: 20px;
-  width: 350px;
-  color: #fff;
-  font-family: 'Poppins', sans-serif;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-  position: relative;
-  animation: fadeInUp 1s ease forwards;
-}
-
-.online-dot {
-  width: 14px;
-  height: 14px;
-  background: #00ff00;
-  border-radius: 50%;
-  border: 2px solid #111;
-  animation: pulse 2s infinite;
-}
-
-.badge {
-  background: linear-gradient(90deg, #2e0000, #ff9999);
-  color: #fff;
-  font-size: 0.8em;
-  padding: 3px 8px;
-  border-radius: 6px;
-  margin-top: 5px;
-  display: inline-block;
-  background-size: 200px;
-  animation: shine 3s linear infinite;
-}
-
-.social-icons img {
-  width: 28px;
-  height: 28px;
-  transition: transform 0.3s ease;
-  animation: bounce 2s infinite;
-}
-
-.social-icons img:hover {
-  transform: scale(1.3) rotate(10deg);
-} </style>
+  </style>
 </head>
 <body>
-
-  <div class="bg-glow"></div>
-
-<header class="music-header">
-  <div class="image-container">
-    <img src="https://r2.guns.lol/044c7f8b-42e9-4a81-ac6a-2b117361d3f8.webp" >
-  </div>
-  <h1 style="text-shadow: 0px 0px 5px #ffffffbd;font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">Escucha nuestra música</h1>
-  MARKUZ
-  <p class="subtitle">Disponible en todas las plataformas digitales.</p>
-</header>
-
-<style>
-  /* Estilo general del header */
-  .music-header {
-    text-align: center;
-    margin-bottom: 60px;
-    color: #fff;
-    background: linear-gradient(135deg, #000 60%, #8B0000 100%);
-    padding: 50px 20px;
-    border-radius: 12px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Imagen circular */
-  .music-header .image-container {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 25px;
-    position: relative;
-    z-index: 1;
-    animation: zoomIn 1.5s ease-out;
-  }
-
-  .music-header img {
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    border: 4px solid #ff0000;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
-    transition: transform 0.5s ease, box-shadow 0.5s ease;
-  }
-
-  /* Hover interactivo */
-  .music-header img:hover {
-    transform: scale(1.1) rotate(3deg);
-    box-shadow: 0 0 30px rgba(255,0,0,0.8);
-  }
-
-  /* Título principal */
-  .music-header h1 {
-    font-size: 3rem;
-    font-weight: bold;
-    color: #ff0000;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
-    margin: 0;
-    position: relative;
-    z-index: 1;
-    animation: fadeInDown 1.5s ease-out;
-  }
-
-  /* Subtítulo */
-  .music-header .subtitle {
-    font-size: 1.2rem;
-    color: #ffffff;
-    margin-top: 10px;
-    letter-spacing: 1px;
-    position: relative;
-    z-index: 1;
-    animation: fadeInUp 2s ease-out;
-  }
-
-  /* Animaciones */
-  @keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes zoomIn {
-    from { opacity: 0; transform: scale(0.5); }
-    to { opacity: 1; transform: scale(1); }
-  }
-</style>
-<style>
-  /* Estilo general del header */
-  .music-header {
-    text-align: center;
-    margin-bottom: 60px;
-    color: #fff;
-    background: linear-gradient(135deg, #000 60%, #8B0000 100%);
-    padding: 40px 20px;
-    border-radius: 12px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Animación de fondo con efecto sutil */
-  .music-header::before {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, #000 0%, transparent 70%);
-    animation: pulse 8s infinite alternate;
-    z-index: 0;
-  }
-
-  /* Título principal */
-  .music-header h1 {
-    font-size: 3rem;
-    font-weight: bold;
-    color: #ff0000;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
-    margin: 0;
-    position: relative;
-    z-index: 1;
-    animation: fadeInDown 1.5s ease-out;
-  }
-
-  /* Subtítulo */
-  .music-header .subtitle {
-    font-size: 1.2rem;
-    color: #ffffff;
-    margin-top: 10px;
-    letter-spacing: 1px;
-    position: relative;
-    z-index: 1;
-    animation: fadeInUp 2s ease-out;
-  }
-
-  /* Animaciones */
-  @keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes pulse {
-    from { transform: scale(1); opacity: 0.4; }
-    to { transform: scale(1.2); opacity: 0.7; }
-  }
-</style>
-<center>
-    <div class="perfil-card">
-  <div class="perfil-header">
-    <img src="ice-cube.gif"  class="perfil-foto">
-    <div class="perfil-info">
-      <div class="nombre">
-        @chiefmarkuz <span class="badge">22 🍀</span>
+<BR><br></BR>
+  <div class="perfil-card">
+    <div class="perfil-header">
+      <img src="ice-cube.gif" class="perfil-foto">
+      <div class="perfil-info">
+        <div class="nombre">@chiefmarkuz <span class="badge">22 🍀</span></div>
+        <div class="estado">Cooking...</div>
       </div>
-      <div class="estado">Cooking...</div>
-    </div>
-    <span class="online-dot"></span>
-  </div>
-</div>
-</center><br><br>
-
-  <section id="albumes">
-       <div class="album">
-      <img src="og_version.webp">
-      <div class="album-info">
-        <center>
-            <h1>! <p style="color: rgb(129, 3, 3);">(og version)</p></h1>
-        </center>
-        <p>El nuevo lanzamiento que define nuestra esencia callejera.</p>
-        <div class="botones">
-          <a href="https://soundcloud.com/chiefmarkuz/sets/og-version-2" target="_blank" class="btn soundcloud">
-            <img src="https://cdn-icons-png.flaticon.com/512/145/145809.png">
-            SoundCloud
-          </a>
-          <a href="https://open.spotify.com/intl-es/album/74i5rDIczclwTrNIkBK5V9" target="_blank" class="btn spotify">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/250px-Spotify_logo_without_text.svg.png">
-            Spotify
-          </a>
-          <a href="https://music.apple.com/us/album/og-version-ep/1839965651?l=es-MX" target="_blank" class="btn apple">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwLts3sFLUMxJ09VW_4A8ncpIAlbd-8BPOAQ&s">
-            Apple Music
-          </a>
-          <a href="https://music.youtube.com/playlist?list=OLAK5uy_mxcmR-wf_H_5HyD4kFMFdm7l45VU6jQEI&si=3T92_xLIeft1NeD7" target="_blank" class="btn youtube">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png" style="height:14px">
-            YouTube
-          </a>
-          <a href="https://audiomack.com/markuz-11/album/og-version" target="_blank" class="btn audiomack">
-            <img src="https://crystalpng.com/wp-content/uploads/2025/03/audiomack_logo.png">
-            Audiomack
-          </a>
-        </div>
-      </div>
-    </div>
-      <div class="album">
-      <img src="Imagen10.webp">
-      <div class="album-info">
-        <h1>22</h1>
-        <p>El nuevo lanzamiento que define nuestra esencia callejera.</p>
-        <div class="botones">
-          <a href="#" target="_blank" class="btn soundcloud" id="soundcloud-22">
-            <img src="https://cdn-icons-png.flaticon.com/512/145/145809.png">
-            SoundCloud
-          </a>
-          <a href="https://open.spotify.com/intl-es/album/15FpFgcOZP1Cgoysv8fzki" target="_blank" class="btn spotify">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/250px-Spotify_logo_without_text.svg.png">
-            Spotify
-          </a>
-          <a href="https://music.apple.com/us/album/22/1859833585?l=es-MX" target="_blank" class="btn apple">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwLts3sFLUMxJ09VW_4A8ncpIAlbd-8BPOAQ&s">
-            Apple Music
-          </a>
-          <a href="https://music.youtube.com/playlist?list=PL-WwyGma8aP3r0LX7sh8me-YpzjnxenzM" target="_blank" class="btn youtube">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png" style="height:14px">
-            YouTube
-          </a>
-          <a href="https://audiomack.com/markuz-11/album/22" target="_blank" class="btn audiomack">
-            <img src="https://crystalpng.com/wp-content/uploads/2025/03/audiomack_logo.png">
-            Audiomack
-          </a>
-        </div>
-      </div>
-    </div>
-    <div hidden  class="album">
-      <img src="foto1.webp" >
-      <div class="album-info">
-        <h3>WAKE UP</h3>
-        <p>El nuevo lanzamiento que define nuestra esencia callejera.</p>
-        <div class="botones">
-          <a href="https://soundcloud.com/chiefmarkuz/sets/5xq4fq5w5rwx" target="_blank" class="btn soundcloud">
-            <img src="https://cdn-icons-png.flaticon.com/512/145/145809.png">
-            SoundCloud
-          </a>
-          <a href="https://open.spotify.com/intl-es/album/0kaCjsEOZARXF4M7jziEHR" target="_blank" class="btn spotify">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/250px-Spotify_logo_without_text.svg.png">
-            Spotify
-          </a>
-          <a href="https://music.apple.com/us/album/1844419910?l=es-MX" target="_blank" class="btn apple">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwLts3sFLUMxJ09VW_4A8ncpIAlbd-8BPOAQ&s">
-            Apple Music
-          </a>
-          <a href="https://music.youtube.com/playlist?list=OLAK5uy_nGGwaL5niGwIrqMompOYxQsJ5XxvPFDNQ" target="_blank" class="btn youtube">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png" style="height:14px">
-            YouTube
-          </a>
-          <a href="https://audiomack.com/markuz-11/album/68e3f965a4f26" target="_blank" class="btn audiomack">
-            <img src="https://crystalpng.com/wp-content/uploads/2025/03/audiomack_logo.png">
-            Audiomack
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="album">
-  <img src="foto2.webp">
-  <div class="album-info">
-    <center>
-      <h1 style="color: #fff;">!</h1>
-    </center>
-    <p>El nuevo lanzamiento que define nuestra esencia callejera.</p>
-    <div class="botones">
-      <a href="https://soundcloud.com/chiefmarkuz/sets/5xq4fq5w5rwx" target="_blank" class="btn soundcloud">
-        <img src="https://cdn-icons-png.flaticon.com/512/145/145809.png">
-        SoundCloud
-      </a>
-      <a href="https://open.spotify.com/intl-es/album/0kaCjsEOZARXF4M7jziEHR" target="_blank" class="btn spotify">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/250px-Spotify_logo_without_text.svg.png">
-        Spotify
-      </a>
-      <a href="https://music.apple.com/us/album/1844419910?l=es-MX" target="_blank" class="btn apple">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwLts3sFLUMxJ09VW_4A8ncpIAlbd-8BPOAQ&s">
-        Apple Music
-      </a>
-      <a href="https://music.youtube.com/playlist?list=OLAK5uy_nGGwaL5niGwIrqMompOYxQsJ5XxvPFDNQ" target="_blank" class="btn youtube">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png" style="height:14px">
-        YouTube
-      </a>
-      <a href="https://audiomack.com/markuz-11/album/68e3f965a4f26" target="_blank" class="btn audiomack">
-        <img src="https://crystalpng.com/wp-content/uploads/2025/03/audiomack_logo.png">
-        Audiomack
-      </a>
+      <span class="online-dot"></span>
     </div>
   </div>
-</div>
+<a href="/albums" class="btn-albums">VER ALBUMS</a>
+  <section class="gallery" id="galeria">
+
+    <img src="foto3.webp" alt="Foto 3">
 
   </section>
 
+  <script>
+    function toggleGaleria() {
+      const galeria = document.getElementById('galeria');
+      galeria.style.display = galeria.style.display === 'grid' ? 'none' : 'grid';
+    }
+  </script>
 </body>
 </html>
