@@ -80,6 +80,23 @@
         height: 300px;
       }
     }
+
+    /* Estilo del título especial */
+    #titulo-tayson {
+      font-size: 3rem;
+      color: red;
+      text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff;
+      margin-top: 30px;
+      display: none;
+    }
+
+    /* Nombre del personaje */
+    #nombre-personaje {
+      font-size: 1.5rem;
+      margin-top: 20px;
+      color: #00ff00;
+      text-shadow: 0 0 5px #000;
+    }
   </style>
 </head>
 <body>
@@ -90,32 +107,65 @@
     <button class="arrow right" onclick="cambiar(1)">&#8594;</button>
 
     <!-- Imágenes de personajes -->
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2vOLZbmKSKX-8aSaaotObJqHOwPi9MiK8nQ&s" class="active">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvgl1iLojKGrfG6c0-fvReaW0wPfP_sySbXw&s">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrxqYZoofm4b5GxSRwHEJ355MI1LfFc5XC9Q&s">
-    <img src="https://i.ibb.co/yFmR7ZfB/Captura-de-pantalla-2026-02-23-022934.png">
-    <img src="https://i.ibb.co/KxP6TR8F/P1000312-JPG.jpg">
-    <img src="https://i.ibb.co/PzsKjRgy/Captura-de-pantalla-2026-02-23-023218asdasdas.png">
-
-    <!-- Nuevas fotos -->
-    <img src="https://i.ibb.co/Xf1sMsyk/IMG-6026.png">
-    <img src="https://i.ibb.co/bgRKg2hr/IMG-6022.png">
-    <img src="https://i.ibb.co/RTpdFNrq/IMG-6025.png">
-    <img src="https://i.ibb.co/YBQjLztG/IMG-6021.png">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTc_fFfmeao5KuUkZ0t4M786Lc5qmv-LdTJ7g&s">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Juan_Gabriel_in_2012.jpg/330px-Juan_Gabriel_in_2012.jpg">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSD85Ui5ngYfg8bxyIjvh9oJBp3ZZKJ2Eo6OZNYa1ABvMjK2zVtyMNOezC_4aKEZfS_bJs&usqp=CAU">
-    <img src="https://www.laizquierdadiario.cl/IMG/arton82119.jpg">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2vOLZbmKSKX-8aSaaotObJqHOwPi9MiK8nQ&s" class="active"> <!-- Myke Tayson -->
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvgl1iLojKGrfG6c0-fvReaW0wPfP_sySbXw&s"> <!-- Don Charchazo -->
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrxqYZoofm4b5GxSRwHEJ355MI1LfFc5XC9Q&s"> <!-- El Care Poto -->
+    <img src="https://i.ibb.co/yFmR7ZfB/Captura-de-pantalla-2026-02-23-022934.png"> <!-- El Sopapo -->
+    <img src="https://i.ibb.co/KxP6TR8F/P1000312-JPG.jpg"> <!-- El Ñachi -->
+    <img src="https://i.ibb.co/PzsKjRgy/Captura-de-pantalla-2026-02-23-023218asdasdas.png"> <!-- El Choclo -->
+    <img src="https://i.ibb.co/Xf1sMsyk/IMG-6026.png"> <!-- El Guatón Cumbiero -->
+    <img src="https://i.ibb.co/bgRKg2hr/IMG-6022.png"> <!-- El Pichulón -->
+    <img src="https://i.ibb.co/RTpdFNrq/IMG-6025.png"> <!-- El Sopapo Chico -->
+    <img src="https://i.ibb.co/YBQjLztG/IMG-6021.png"> <!-- El Charchazo Junior -->
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTc_fFfmeao5KuUkZ0t4M786Lc5qmv-LdTJ7g&s"> <!-- El Care Raja -->
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Juan_Gabriel_in_2012.jpg/330px-Juan_Gabriel_in_2012.jpg"> <!-- Juan Gabriel -->
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSD85Ui5ngYfg8bxyIjvh9oJBp3ZZKJ2Eo6OZNYa1ABvMjK2zVtyMNOezC_4aKEZfS_bJs&usqp=CAU"> <!-- El Choro de la Pobla -->
+    <img src="https://www.laizquierdadiario.cl/IMG/arton82119.jpg"> <!-- El Flaite Supremo -->
   </div>
+
+  <!-- Título especial -->
+  <h2 id="titulo-tayson">TE VOY A SACARTE LA CONCHETUMARE, A PUROS TAYSON IJOLAPERRA</h2>
+
+  <!-- Nombre del personaje -->
+  <h3 id="nombre-personaje">Myke Tayson</h3>
 
   <script>
     let indice = 0;
     const imagenes = document.querySelectorAll('.selector img');
+    const tituloTayson = document.getElementById('titulo-tayson');
+    const nombrePersonaje = document.getElementById('nombre-personaje');
+
+    const nombres = [
+      "Myke Tayson",
+      "Don Charchazo",
+      "El Care Poto",
+      "El Sopapo",
+      "El Ñachi",
+      "El Choclo",
+      "El Guatón Cumbiero",
+      "El Pichulón",
+      "El Sopapo Chico",
+      "El Charchazo Junior",
+      "El Care Raja",
+      "Juan Gabriel",
+      "El Choro de la Pobla",
+      "El Flaite Supremo"
+    ];
 
     function cambiar(direccion) {
       imagenes[indice].classList.remove('active');
       indice = (indice + direccion + imagenes.length) % imagenes.length;
       imagenes[indice].classList.add('active');
+
+      // Mostrar título solo si está seleccionada la imagen de Myke Tayson (índice 0)
+      if (indice === 0) {
+        tituloTayson.style.display = 'block';
+      } else {
+        tituloTayson.style.display = 'none';
+      }
+
+      // Actualizar nombre del personaje
+      nombrePersonaje.textContent = nombres[indice];
     }
   </script>
 </body>
