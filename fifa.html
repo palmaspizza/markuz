@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>FIFA - Selecciona tu personaje</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #000, #0a3d62);
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 40px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .selector {
+      position: relative;
+      display: inline-block;
+      width: 400px;
+      height: 400px;
+      overflow: hidden;
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(0,0,0,0.7);
+    }
+
+    .selector img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      border-radius: 20px;
+    }
+
+    .selector img.active {
+      display: block;
+    }
+
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2rem;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      padding: 10px 15px;
+      border-radius: 50%;
+      transition: background 0.3s;
+    }
+
+    .arrow:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .arrow.left {
+      left: 10px;
+    }
+
+    .arrow.right {
+      right: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .selector {
+        width: 90%;
+        height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>SELECCIONA TU PERSONAJE</h1>
+
+  <div class="selector">
+    <button class="arrow left" onclick="cambiar(-1)">&#8592;</button>
+    <button class="arrow right" onclick="cambiar(1)">&#8594;</button>
+
+    <!-- Imágenes de personajes -->
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2vOLZbmKSKX-8aSaaotObJqHOwPi9MiK8nQ&s" class="active">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvgl1iLojKGrfG6c0-fvReaW0wPfP_sySbXw&s">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrxqYZoofm4b5GxSRwHEJ355MI1LfFc5XC9Q&s">
+    <img src="https://i.ibb.co/yFmR7ZfB/Captura-de-pantalla-2026-02-23-022934.png">
+    <img src="https://i.ibb.co/KxP6TR8F/P1000312-JPG.jpg">
+    <img src="https://i.ibb.co/PzsKjRgy/Captura-de-pantalla-2026-02-23-023218asdasdas.png">
+  </div>
+
+  <script>
+    let indice = 0;
+    const imagenes = document.querySelectorAll('.selector img');
+
+    function cambiar(direccion) {
+      imagenes[indice].classList.remove('active');
+      indice = (indice + direccion + imagenes.length) % imagenes.length;
+      imagenes[indice].classList.add('active');
+    }
+  </script>
+</body>
+</html>
