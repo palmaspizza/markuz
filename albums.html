@@ -543,17 +543,32 @@
         <span class="online-dot"></span>
     </div>
     </div>
-    <br><br>
-    ¡Escucha "<span style="text-decoration: underline; color: rgb(0, 223, 0);">YO NO ENCAJO</span>" Aquí!
-    <br>
+ 
+<br><br>
+¡Escucha Aquí!
+<br>
+
 <!-- Reproductor estilo YouTube -->
 <div style="display:flex; justify-content:center; align-items:center; background:#111; padding:20px; border-radius:12px;">
 
-  <div style="position:relative; display:inline-block; border-radius:12px; overflow:hidden; box-shadow:0 0 20px rgba(0,0,0,0.6);">
-    
+  <div style="position:relative; display:inline-block; border-radius:12px; overflow:hidden; box-shadow:0 0 20px rgba(0,0,0,0.6); 
+              width:400px; height:200px;">
+
+    <!-- Barra superior estilo YouTube -->
+    <div style="position:absolute; top:0; left:0; width:100%; background:rgba(0,0,0,0.7); 
+                display:flex; align-items:center; justify-content:center; padding:6px 10px; z-index:2;">
+
+      <!-- Foto circular del artista -->
+      <img src="foto_artista_3.webp" alt="Artista"
+           style="width:29px; height:29px; border-radius:50%; border:1px solid #ffffff; box-shadow:0 0 6px rgba(0,0,0,0.6); position:absolute; left:45px;">
+
+      <!-- Texto superior estilo título centrado y subrayado -->
+      <span style="color:#fff; font-size:15px; font-weight:bold; text-decoration:underline;">YO NO ENCAJO</span>
+    </div>
+
     <!-- Imagen estilo miniatura de YouTube -->
-    <img src="foto1.webp" alt="Foto" 
-         style="width:400px; display:block; border-radius:12px;">
+    <img src="foto1.webp" alt="Foto"  
+         style="width:100%; height:100%; object-fit:cover; object-position:center; display:block; border-radius:12px;">
 
     <!-- Botón Play/Pausa centrado -->
     <button id="playPauseBtn"
