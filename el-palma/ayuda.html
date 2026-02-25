@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Código para WhatsApp</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #000000, #8B0000);
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+    h2 {
+      font-size: 26px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #ff3b3b;
+      text-shadow: 0 0 8px rgba(255, 0, 0, 0.7);
+    }
+    input, textarea {
+      width: 80%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 14px;
+    }
+    input::placeholder, textarea::placeholder {
+      color: #ccc;
+    }
+    textarea {
+      height: 90px;
+      resize: none;
+    }
+    button {
+      padding: 14px 24px;
+      margin-top: 20px;
+      background: linear-gradient(90deg, #ff0000, #660000);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 12px rgba(255, 0, 0, 0.6);
+    }
+    button:hover {
+      background: linear-gradient(90deg, #660000, #ff0000);
+      transform: scale(1.05);
+      box-shadow: 0 0 18px rgba(255, 0, 0, 0.9);
+    }
+    .album {
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 25px;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    }
+    .album img {
+      max-width: 200px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
+    }
+    .album-info h3 {
+      margin: 10px 0;
+      font-size: 22px;
+      color: #ff3b3b;
+    }
+    .album-info p {
+      font-size: 14px;
+      color: #ddd;
+    }
+    .botones {
+      margin-top: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+    .btn img {
+      height: 18px;
+    }
+    .soundcloud { background: #ff7700; }
+    .spotify { background: #1DB954; }
+    .apple { background: #A2AAAD; }
+    .youtube { background: #FF0000; }
+    .audiomack { background: #FFCB05; }
+    .btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+    }
+  </style>
+</head>
+<body>
+  <h2>Generar Código del Álbum/Canción y Enviar por WhatsApp</h2>
+
+  <input type="text" id="foto" placeholder="Link de la foto del álbum/canción">
+  <input type="text" id="titulo" placeholder="Nombre del álbum o canción">
+  <textarea id="descripcion" placeholder="Descripción del álbum o canción"></textarea>
+
+  <br><br><br><H3><SPAN style="text-decoration: underline blue;">LINKS</SPAN> <br>"Opcionales" </H3>
+
+  <input type="text" id="soundcloud" placeholder="Link de SoundCloud">
+  <input type="text" id="spotify" placeholder="Link de Spotify">
+  <input type="text" id="apple" placeholder="Link de Apple Music">
+  <input type="text" id="youtube" placeholder="Link de YouTube Music">
+  <input type="text" id="audiomack" placeholder="Link de Audiomack">
+
+  <button onclick="enviarWhatsApp()">Generar y Enviar</button>
+
+  <script>
+    function enviarWhatsApp() {
+      const foto = document.getElementById('foto').value;
+      const titulo = document.getElementById('titulo').value;
+      const descripcion = document.getElementById('descripcion').value;
+
+      const soundcloud = document.getElementById('soundcloud').value;
+      const spotify = document.getElementById('spotify').value;
+      const apple = document.getElementById('apple').value;
+      const youtube = document.getElementById('youtube').value;
+      const audiomack = document.getElementById('audiomack').value;
+
+      const codigo = `
+<div class="album">
+  <img src="${foto}">
+  <div class="album-info">
+    <h3>${titulo}</h3>
+    <p>${descripcion}</p>
+    <div class="botones">
+      <a href="${soundcloud}" target="_blank" class="btn soundcloud">
+        <img src="https://cdn-icons-png.flaticon.com/512/145/145809.png"> SoundCloud
+      </a>
+      <a href="${spotify}" target="_blank" class="btn spotify">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg"> Spotify
+      </a>
+      <a href="${apple}" target="_blank" class="btn apple">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"> Apple Music
+      </a>
+      <a href="${youtube}" target="_blank" class="btn youtube">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png"> YouTube
+      </a>
+      <a href="${audiomack}" target="_blank" class="btn audiomack">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Audiomack_logo.png"> Audiomack
+      </a>
+    </div>
+  </div>
+</div>`;
+
+      const mensaje = encodeURIComponent(codigo);
+      const numero = "56954998792";
+      const url = `https://wa.me/${numero}?text=${mensaje}`;
+      window.open(url, "_blank");
+    }
+  </script>
+</body>
+</html>
