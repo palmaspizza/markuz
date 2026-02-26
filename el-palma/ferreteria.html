@@ -265,7 +265,21 @@
 
     let productos = [];
     let galeria = [];
-    let carrito = JSON.parse(localStorage.getItem('ferre_v2_cart')) || [];
+    let carrito = [];
+    try {
+      const stored = JSON.parse(localStorage.getItem('ferre_v2_cart') || '[]');
+      if (Array.isArray(stored)) {
+        carrito = stored.map(item => ({
+          id: item.id,
+          cantidad: typeof item.cantidad === 'number' && item.cantidad > 0 ? item.cantidad : 1,
+          tamanioSeleccionado: item.tamanioSeleccionado || '',
+          colorSeleccionado: item.colorSeleccionado || ''
+        }));
+      }
+    } catch (e) {
+      localStorage.removeItem('ferre_v2_cart');
+      carrito = [];
+    }
     let isAdmin = false;
     let filtroTexto = '';
     let filtroCategoria = 'all';
@@ -448,7 +462,7 @@
       if(itemExistente) { 
         itemExistente.cantidad++; 
       } else { 
-        carrito.push({...p, tamanioSeleccionado: tamSel, colorSeleccionado: colSel, cantidad: 1}); 
+        carrito.push({ id, cantidad: 1, tamanioSeleccionado: tamSel, colorSeleccionado: colSel }); 
       }
       lanzarEfectos();
       if (btn) flyToCart(btn);
@@ -499,7 +513,18 @@
     }
 
     function actualizarCarritoUI() {
-      localStorage.setItem('ferre_v2_cart', JSON.stringify(carrito));
+      try {
+        const compactCart = carrito.map(item => ({
+          id: item.id,
+          cantidad: item.cantidad,
+          tamanioSeleccionado: item.tamanioSeleccionado || '',
+          colorSeleccionado: item.colorSeleccionado || ''
+        }));
+        localStorage.setItem('ferre_v2_cart', JSON.stringify(compactCart));
+      } catch (e) {
+        console.error('Error guardando carrito', e);
+        localStorage.removeItem('ferre_v2_cart');
+      }
       const list = document.getElementById('cartList');
       const count = document.getElementById('cartCount');
       const total = document.getElementById('cartTotal');
@@ -507,20 +532,21 @@
       list.innerHTML = '';
       let sum = 0; let itemsCount = 0;
 
-      carrito.forEach((p, i) => {
-        const precioUnit = typeof p.precio === 'number' ? p.precio : parseFloat(p.precio) || 0;
-        const subtotal = precioUnit * p.cantidad;
+      carrito.forEach((item, i) => {
+        const prod = productos.find(x => x.id === item.id) || {};
+        const precioUnit = typeof prod.precio === 'number' ? prod.precio : parseFloat(prod.precio) || 0;
+        const subtotal = precioUnit * item.cantidad;
         sum += subtotal;
-        itemsCount += p.cantidad;
+        itemsCount += item.cantidad;
         const detalles = [];
-        if (p.tamanioSeleccionado) detalles.push('Tamaño: ' + p.tamanioSeleccionado);
-        if (p.colorSeleccionado) detalles.push('Color: ' + p.colorSeleccionado);
+        if (item.tamanioSeleccionado) detalles.push('Tamaño: ' + item.tamanioSeleccionado);
+        if (item.colorSeleccionado) detalles.push('Color: ' + item.colorSeleccionado);
         const detallesTexto = detalles.length ? detalles.join(' | ') : '';
         list.innerHTML += `
           <div class="cart-item">
-            <img src="${p.foto || 'https://via.placeholder.com/200'}" class="cart-img-min">
+            <img src="${prod.foto || 'https://via.placeholder.com/200'}" class="cart-img-min">
             <div>
-              <div style="font-weight:bold; font-size:0.9rem">${p.nombre || ''}</div>
+              <div style="font-weight:bold; font-size:0.9rem">${prod.nombre || ''}</div>
               <div style="font-size:0.8rem; color:#64748b">$${precioUnit} c/u</div>
               ${detallesTexto ? `<div style="font-size:0.7rem; color:#94a3b8; margin-top:2px">${detallesTexto}</div>` : ''}
               <button class="btn-delete-item" onclick="borrarDelCarrito(${i})">Borrar producto</button>
@@ -528,7 +554,7 @@
             <div style="text-align:right">
               <div class="qty-controls">
                 <button class="btn-qty" onclick="cambiarCantidad(${i}, -1)">-</button>
-                <input class="qty-input" readonly value="${p.cantidad}">
+                <input class="qty-input" readonly value="${item.cantidad}">
                 <button class="btn-qty" onclick="cambiarCantidad(${i}, 1)">+</button>
               </div>
               <div style="font-weight:900; margin-top:5px">$${subtotal.toLocaleString()}</div>
@@ -541,11 +567,11 @@
 
     window.enviarWhatsApp = () => {
       if(!carrito.length) return;
-      const copiaCarrito = carrito.map(p => ({...p}));
+      const copiaCarrito = carrito.map(item => ({...item}));
       const cantidadesPorProducto = {};
-      copiaCarrito.forEach(p => {
-        if (!cantidadesPorProducto[p.id]) cantidadesPorProducto[p.id] = 0;
-        cantidadesPorProducto[p.id] += p.cantidad;
+      copiaCarrito.forEach(item => {
+        if (!cantidadesPorProducto[item.id]) cantidadesPorProducto[item.id] = 0;
+        cantidadesPorProducto[item.id] += item.cantidad;
       });
 
       Object.keys(cantidadesPorProducto).forEach(id => {
@@ -559,16 +585,18 @@
 
       let msg = `🏗️ *PEDIDO FERRETERÍA MASTER*\n\n`;
       let total = 0;
-      copiaCarrito.forEach(p => {
-        const subtotal = p.precio * p.cantidad;
+      copiaCarrito.forEach(item => {
+        const prod = productos.find(x => x.id === item.id) || {};
+        const precioUnit = typeof prod.precio === 'number' ? prod.precio : parseFloat(prod.precio) || 0;
+        const subtotal = precioUnit * item.cantidad;
         const detalles = [];
-        if (p.tamanioSeleccionado) detalles.push(`Tamaño: ${p.tamanioSeleccionado}`);
-        if (p.colorSeleccionado) detalles.push(`Color: ${p.colorSeleccionado}`);
+        if (item.tamanioSeleccionado) detalles.push(`Tamaño: ${item.tamanioSeleccionado}`);
+        if (item.colorSeleccionado) detalles.push(`Color: ${item.colorSeleccionado}`);
         const detallesTexto = detalles.length ? ` (${detalles.join(' | ')})` : '';
-        msg += `📦 *${p.nombre}*${detallesTexto}\n   Cant: ${p.cantidad} x $${p.precio} = *$${subtotal.toLocaleString()}*\n\n`;
+        msg += `📦 *${prod.nombre || ''}*${detallesTexto}\n   Cant: ${item.cantidad} x $${precioUnit} = *$${subtotal.toLocaleString()}*\n\n`;
         total += subtotal;
       });
-      msg += `🔹 _Artículos en carrito:_ *${copiaCarrito.reduce((acc, p) => acc + p.cantidad, 0)}*\n`;
+      msg += `🔹 _Artículos en carrito:_ *${copiaCarrito.reduce((acc, item) => acc + item.cantidad, 0)}*\n`;
       msg += `\n💰 *TOTAL FINAL:* $${total.toLocaleString()}\n\n✅ _Confirmar pedido por favor._`;
 
       carrito = [];
