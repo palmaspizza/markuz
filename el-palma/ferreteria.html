@@ -12,9 +12,8 @@
     }
 
     * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-    body { background: var(--bg); margin: 0; padding-top: 130px; }
+    body { background: var(--bg); margin: 0; padding-top: 180px; }
 
-    /* --- CABECERA --- */
     .header-fixed { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: var(--primary); color: white; }
     .nav-top { display: flex; justify-content: space-between; padding: 15px 5%; align-items: center; }
     .logo { font-size: 1.5rem; font-weight: 900; color: white; text-decoration: none; }
@@ -23,7 +22,30 @@
     .icon-btn { background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer; position: relative; }
     .badge { position: absolute; top: -5px; right: -8px; background: var(--danger); font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; }
 
-    /* --- CARRITO ESTILIZADO --- */
+    .top-bar { max-width: 1200px; margin: 0 auto; padding: 10px 20px 15px 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; background: #020617; }
+    .search-input { flex: 1 1 220px; padding: 8px 10px; border-radius: 999px; border: 1px solid #1e293b; font-size: 0.85rem; }
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; }
+    .filter-btn { padding: 6px 12px; border-radius: 999px; border: 1px solid #1e293b; background: transparent; color: #e2e8f0; font-size: 0.75rem; cursor: pointer; }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+    .gallery-wrap { background: #020617; padding: 10px 20px 20px 20px; }
+    .gallery { max-width: 1200px; margin: 0 auto; display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
+    .gallery-item { position: relative; flex: 0 0 auto; width: 180px; height: 120px; border-radius: 10px; overflow: hidden; border: 1px solid #1e293b; background: #0f172a; display: flex; align-items: center; justify-content: center; }
+    .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+    .gallery-delete { position: absolute; top: 5px; right: 5px; width: 24px; height: 24px; border-radius: 999px; border: none; background: var(--danger); color: white; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+    #loader { position: fixed; inset: 0; background: #020617; display: flex; align-items: center; justify-content: center; z-index: 3000; flex-direction: column; color: #e2e8f0; }
+    .loader-cart { width: 120px; height: 120px; border-radius: 50%; border: 4px solid #1e293b; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+    .loader-cart svg { width: 80px; height: 80px; animation: spin-cart 1.5s linear infinite; }
+    .loader-text { font-size: 0.9rem; opacity: 0.8; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    @keyframes spin-cart {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .flying-cart { position: fixed; z-index: 2500; pointer-events: none; font-size: 1.4rem; }
+
     .cart-header { background: var(--accent); color: white; padding: 20px; border-radius: 12px 12px 0 0; text-align: center; margin: -30px -30px 20px -30px; }
     .cart-item { display: grid; grid-template-columns: 80px 1fr 120px; gap: 15px; padding: 15px 0; border-bottom: 1px solid #eee; align-items: center; }
     .cart-img-min { width: 70px; height: 70px; object-fit: contain; border: 1px solid #eee; border-radius: 8px; }
@@ -32,13 +54,11 @@
     .qty-input { width: 40px; text-align: center; border: none; background: transparent; font-weight: bold; }
     .btn-delete-item { color: var(--danger); background: none; border: none; cursor: pointer; font-size: 0.8rem; text-decoration: underline; margin-top: 5px; }
 
-    /* --- FORMULARIO AVANZADO --- */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .full-width { grid-column: span 2; }
     input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; }
     label { font-size: 0.75rem; font-weight: bold; color: var(--primary); text-transform: uppercase; }
 
-    /* --- CATALOGO --- */
     .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
     .card { background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; position: relative; transition: 0.3s; }
@@ -46,7 +66,18 @@
     .card-img { height: 220px; padding: 20px; display: flex; align-items: center; justify-content: center; background: white; }
     .card-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
     .card-info { padding: 20px; }
+    .specs-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; font-size: 0.7rem; color: #475569; margin-bottom: 10px; }
+    .specs-label { font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.65rem; color: #94a3b8; }
+    .specs-value { font-weight: 600; color: #0f172a; }
+    .specs-select { width: 100%; padding: 4px 6px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.7rem; background: white; }
+    .card-delete-x { position: absolute; top: 10px; left: 10px; width: 28px; height: 28px; border-radius: 999px; border: none; background: var(--danger); color: white; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .stock-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; margin-bottom: 8px; }
+    .stock-badge-ok { background: #dcfce7; color: #166534; }
+    .stock-badge-low { background: #fef9c3; color: #854d0e; }
+    .stock-badge-out { background: #fee2e2; color: #b91c1c; }
+    .stock-dot { width: 8px; height: 8px; border-radius: 999px; background: currentColor; }
     .btn-add { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .btn-add[disabled] { cursor: not-allowed; background: #cbd5e1; color: #64748b; }
 
     /* --- ANIMACIONES --- */
     #happy-cart { position: fixed; bottom: -150px; left: 50%; transform: translateX(-50%); z-index: 3000; transition: 0.5s; }
@@ -60,6 +91,24 @@
 </head>
 <body>
 
+  <div id="loader">
+    <div class="loader-cart">
+      <svg viewBox="0 0 100 80">
+        <circle cx="40" cy="60" r="8" fill="#334155">
+          <animateTransform attributeName="transform" type="rotate" from="0 40 60" to="360 40 60" dur="0.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="70" cy="60" r="8" fill="#334155">
+          <animateTransform attributeName="transform" type="rotate" from="0 70 60" to="360 70 60" dur="0.5s" repeatCount="indefinite"/>
+        </circle>
+        <path d="M10 10 H30 L40 50 H80 L90 10" fill="none" stroke="#2563eb" stroke-width="4"/>
+        <circle cx="50" cy="25" r="3" fill="#e2e8f0"/>
+        <circle cx="70" cy="25" r="3" fill="#e2e8f0"/>
+        <path d="M55 35 Q60 40 65 35" stroke="#e2e8f0" fill="none" stroke-width="2"/>
+      </svg>
+    </div>
+    <div class="loader-text">Cargando catálogo profesional</div>
+  </div>
+
   <div id="happy-cart">
     <svg width="100" height="80"><circle cx="40" cy="60" r="8" fill="#333"><animateTransform attributeName="transform" type="rotate" from="0 40 60" to="360 40 60" dur="0.5s" repeatCount="indefinite"/></circle><circle cx="70" cy="60" r="8" fill="#333"><animateTransform attributeName="transform" type="rotate" from="0 70 60" to="360 70 60" dur="0.5s" repeatCount="indefinite"/></circle><path d="M10 10 H30 L40 50 H80 L90 10" fill="none" stroke="#2563eb" stroke-width="4"/><circle cx="50" cy="25" r="3" fill="black"/><circle cx="70" cy="25" r="3" fill="black"/><path d="M55 35 Q60 40 65 35" stroke="black" fill="none" stroke-width="2"/></svg>
   </div>
@@ -69,13 +118,29 @@
       <a href="#" class="logo">FERRE<span>MASTER</span></a>
       <div class="nav-icons">
         <button class="icon-btn" onclick="abrirModal('modalClave')"><i class="fas fa-tools"></i></button>
-        <button class="icon-btn" onclick="abrirModal('modalCarrito')">
-          <i class="fas fa-shopping-cart"></i>
+        <button class="icon-btn" id="cartIconBtn" onclick="abrirModal('modalCarrito')">
+          <i class="fas fa-shopping-cart" id="cartIcon"></i>
           <span class="badge" id="cartCount">0</span>
         </button>
       </div>
     </div>
+
+    <div class="top-bar">
+      <input id="searchInput" class="search-input" type="text" placeholder="Buscar producto por nombre, marca o categoría">
+      <div class="filters">
+        <button class="filter-btn active" data-cat="all">Todos</button>
+        <button class="filter-btn" data-cat="Herramientas Eléctricas">Herramientas Eléctricas</button>
+        <button class="filter-btn" data-cat="Manuales">Manuales</button>
+        <button class="filter-btn" data-cat="Tornillería">Tornillería</button>
+        <button class="filter-btn" data-cat="Electricidad">Electricidad</button>
+        <button class="filter-btn" data-cat="Pintura">Pintura</button>
+      </div>
+    </div>
   </header>
+
+  <div class="gallery-wrap">
+    <div class="gallery" id="galeriaSuperior"></div>
+  </div>
 
   <div class="container">
     <div class="grid" id="listaProductos"></div>
@@ -121,8 +186,16 @@
           <input type="number" id="pPre">
         </div>
         <div>
+          <label>Stock disponible</label>
+          <input type="number" id="pStock">
+        </div>
+        <div>
           <label>Marca</label>
           <input type="text" id="pMarca" placeholder="Ej: DeWalt, Bosch">
+        </div>
+        <div>
+          <label>Color</label>
+          <input type="text" id="pColor" placeholder="Ej: Amarillo, Negro">
         </div>
         <div>
           <label>Medidas / Tamaño</label>
@@ -141,12 +214,18 @@
           <input type="file" id="pImg">
         </div>
         <div class="full-width">
+          <label>Imagen destacada para galería</label>
+          <input type="file" id="gImg">
+        </div>
+        <div class="full-width">
           <label>Descripción detallada</label>
           <textarea id="pDesc" rows="3"></textarea>
         </div>
       </div>
       <button class="btn-add" style="margin-top:20px" onclick="guardar()">GUARDAR PRODUCTO</button>
+      <button class="btn-add" style="background:#e2e8f0; color:#1f2933; margin-top:10px" onclick="guardarImagenGaleria()">AGREGAR IMAGEN A GALERÍA</button>
       <button class="btn-add" style="background:#eee; color:#333; margin-top:10px" onclick="cerrarModal('modalProd')">CANCELAR</button>
+      <button class="btn-add" style="background:#fecaca; color:#7f1d1d; margin-top:10px" onclick="activarModoEliminar()">Editar o eliminar producto o imagen de galería</button>
     </div>
   </div>
 
@@ -158,28 +237,100 @@
     </div>
   </div>
 
+  <div class="modal" id="modalConfirm">
+    <div class="modal-content" style="max-width:400px; text-align:center">
+      <h3 id="confirmTitle">Confirmar acción</h3>
+      <p id="confirmMessage">¿Está seguro que desea continuar?</p>
+      <button class="btn-add" id="confirmAccept">ACEPTAR</button>
+      <button class="btn-add" style="background:#e5e7eb; color:#111827; margin-top:10px" id="confirmCancel">CANCELAR</button>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, push, set, remove, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    const firebaseConfig = { apiKey: "AIzaSyCuHSlv7WEmoEWh96rWWCnTi7AwgN-7Hd4", databaseURL: "https://tatuajes-e7c8f-default-rtdb.firebaseio.com/" };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCuHSlv7WEmoEWh96rWWCnTi7AwgN-7Hd4",
+      authDomain: "tatuajes-e7c8f.firebaseapp.com",
+      databaseURL: "https://tatuajes-e7c8f-default-rtdb.firebaseio.com/",
+      projectId: "tatuajes-e7c8f",
+      storageBucket: "tatuajes-e7c8f.appspot.com"
+    };
+
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const dbRef = ref(db, 'productos');
+    const galeriaRef = ref(db, 'galeria_ferre');
 
     let productos = [];
+    let galeria = [];
     let carrito = JSON.parse(localStorage.getItem('ferre_v2_cart')) || [];
     let isAdmin = false;
+    let filtroTexto = '';
+    let filtroCategoria = 'all';
+    let loaderOculto = false;
+    let modoEliminar = false;
+    let accionPendiente = null;
 
     onValue(dbRef, (snap) => {
       productos = [];
       snap.forEach(c => { productos.push({id: c.key, ...c.val()}); });
       render();
       actualizarCarritoUI();
+      ocultarLoader();
     });
+
+    onValue(galeriaRef, (snap) => {
+      galeria = [];
+      snap.forEach(c => { galeria.push({id: c.key, ...c.val()}); });
+      renderGaleria();
+      ocultarLoader();
+    });
+
+    function ocultarLoader() {
+      if (loaderOculto) return;
+      const loader = document.getElementById('loader');
+      if (!loader) return;
+      loaderOculto = true;
+      setTimeout(() => { loader.style.display = 'none'; }, 1500);
+    }
 
     window.abrirModal = (id) => document.getElementById(id).style.display = 'flex';
     window.cerrarModal = (id) => document.getElementById(id).style.display = 'none';
+
+    window.activarModoEliminar = () => {
+      modoEliminar = true;
+      cerrarModal('modalProd');
+      render();
+      renderGaleria();
+    };
+
+    window.mostrarConfirmacion = (mensaje, onConfirm) => {
+      accionPendiente = onConfirm;
+      const msg = document.getElementById('confirmMessage');
+      if (msg) msg.innerText = mensaje;
+      abrirModal('modalConfirm');
+    };
+
+    function cerrarModalConfirm() {
+      accionPendiente = null;
+      cerrarModal('modalConfirm');
+    }
+
+    const confirmAccept = document.getElementById('confirmAccept');
+    const confirmCancel = document.getElementById('confirmCancel');
+    if (confirmAccept) {
+      confirmAccept.onclick = () => {
+        if (accionPendiente) accionPendiente();
+        cerrarModalConfirm();
+      };
+    }
+    if (confirmCancel) {
+      confirmCancel.onclick = () => {
+        cerrarModalConfirm();
+      };
+    }
 
     window.login = () => {
       if(document.getElementById('passInput').value === '1234') {
@@ -190,19 +341,41 @@
     window.guardar = () => {
       const id = document.getElementById('pId').value;
       const file = document.getElementById('pImg').files[0];
+      const existente = id ? productos.find(p => p.id === id) : null;
+
+      const nombreInput = document.getElementById('pNom').value.trim();
+      const precioInput = document.getElementById('pPre').value;
+      const stockInput = document.getElementById('pStock').value;
+      const categoriaInput = document.getElementById('pCat').value;
+      const marcaInput = document.getElementById('pMarca').value;
+      const colorInput = document.getElementById('pColor').value;
+      const tamanioInput = document.getElementById('pTamanio').value;
+      const materialInput = document.getElementById('pMaterial').value;
+      const garantiaInput = document.getElementById('pGarantia').value;
+      const descInput = document.getElementById('pDesc').value;
+
+      const precioNumero = parseFloat(precioInput);
+      const stockNumero = parseInt(stockInput, 10);
+
       const data = {
-        nombre: document.getElementById('pNom').value,
-        precio: parseFloat(document.getElementById('pPre').value),
-        categoria: document.getElementById('pCat').value,
-        marca: document.getElementById('pMarca').value,
-        tamanio: document.getElementById('pTamanio').value,
-        material: document.getElementById('pMaterial').value,
-        garantia: document.getElementById('pGarantia').value,
-        desc: document.getElementById('pDesc').value
+        nombre: nombreInput || (existente ? (existente.nombre || '') : ''),
+        precio: isNaN(precioNumero)
+          ? (existente && typeof existente.precio === 'number' ? existente.precio : 0)
+          : precioNumero,
+        categoria: categoriaInput || (existente ? (existente.categoria || '') : ''),
+        marca: marcaInput || (existente ? (existente.marca || '') : ''),
+        color: colorInput || (existente ? (existente.color || '') : ''),
+        tamanio: tamanioInput || (existente ? (existente.tamanio || '') : ''),
+        material: materialInput || (existente ? (existente.material || '') : ''),
+        garantia: garantiaInput || (existente ? (existente.garantia || '') : ''),
+        desc: descInput || (existente ? (existente.desc || '') : ''),
+        stock: isNaN(stockNumero)
+          ? (existente && typeof existente.stock === 'number' ? existente.stock : 0)
+          : stockNumero
       };
 
       const final = (url) => {
-        data.foto = url || (id ? productos.find(p=>p.id===id).foto : 'https://via.placeholder.com/200');
+        data.foto = url || (existente ? existente.foto : 'https://via.placeholder.com/200');
         id ? set(ref(db, 'productos/'+id), data) : push(dbRef, data);
         cerrarModal('modalProd');
       };
@@ -214,6 +387,17 @@
       } else { final(null); }
     };
 
+    window.guardarImagenGaleria = () => {
+      const file = document.getElementById('gImg').files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = { url: e.target.result };
+        push(galeriaRef, data);
+      };
+      reader.readAsDataURL(file);
+    };
+
     window.editar = (id) => {
       const p = productos.find(x => x.id === id);
       document.getElementById('pId').value = id;
@@ -221,24 +405,53 @@
       document.getElementById('pPre').value = p.precio;
       document.getElementById('pCat').value = p.categoria;
       document.getElementById('pMarca').value = p.marca || '';
+      document.getElementById('pColor').value = p.color || '';
       document.getElementById('pTamanio').value = p.tamanio || '';
       document.getElementById('pMaterial').value = p.material || '';
       document.getElementById('pGarantia').value = p.garantia || '';
       document.getElementById('pDesc').value = p.desc || '';
+      document.getElementById('pStock').value = typeof p.stock === 'number' ? p.stock : '';
       abrirModal('modalProd');
     };
 
-    window.borrarDB = (id) => { if(confirm('¿Borrar de la tienda?')) remove(ref(db, 'productos/'+id)); };
+    window.borrarDB = (id) => {
+      window.mostrarConfirmacion('¿Borrar este producto de la tienda?', () => remove(ref(db, 'productos/'+id)));
+    };
+    window.eliminarDB = window.borrarDB;
 
-    // --- LOGICA CARRITO ---
-    window.agregar = (id) => {
-      const itemExistente = carrito.find(x => x.id === id);
-      if(itemExistente) { itemExistente.cantidad++; } 
-      else { 
-        const p = productos.find(x => x.id === id);
-        carrito.push({...p, cantidad: 1}); 
+    window.borrarImgGaleria = (id) => {
+      window.mostrarConfirmacion('¿Eliminar esta imagen de la galería?', () => remove(ref(db, 'galeria_ferre/'+id)));
+    };
+
+    function parseOpciones(valor) {
+      if (!valor) return [];
+      const partes = valor.split(/[,/]/).map(v => v.trim()).filter(v => v.length);
+      if (partes.length <= 1) return [];
+      return partes;
+    }
+
+    window.agregar = (id, btn) => {
+      const p = productos.find(x => x.id === id);
+      if (!p) return;
+      let tamSel = p.tamanio || '';
+      let colSel = p.color || '';
+      if (btn && btn.closest) {
+        const card = btn.closest('.card');
+        if (card) {
+          const selTam = card.querySelector('select[data-type="tamanio"]');
+          if (selTam) tamSel = selTam.value;
+          const selCol = card.querySelector('select[data-type="color"]');
+          if (selCol) colSel = selCol.value;
+        }
+      }
+      const itemExistente = carrito.find(x => x.id === id && x.tamanioSeleccionado === tamSel && x.colorSeleccionado === colSel);
+      if(itemExistente) { 
+        itemExistente.cantidad++; 
+      } else { 
+        carrito.push({...p, tamanioSeleccionado: tamSel, colorSeleccionado: colSel, cantidad: 1}); 
       }
       lanzarEfectos();
+      if (btn) flyToCart(btn);
       actualizarCarritoUI();
     };
 
@@ -261,6 +474,30 @@
       setTimeout(() => h.classList.remove('active'), 1500);
     }
 
+    function flyToCart(btn) {
+      const cartIcon = document.getElementById('cartIconBtn');
+      if(!cartIcon) return;
+      const rectBtn = btn.getBoundingClientRect();
+      const rectCart = cartIcon.getBoundingClientRect();
+      const emoji = document.createElement('div');
+      emoji.className = 'flying-cart';
+      emoji.textContent = '🛒✨';
+      emoji.style.left = rectBtn.left + rectBtn.width / 2 + 'px';
+      emoji.style.top = rectBtn.top + rectBtn.height / 2 + 'px';
+      document.body.appendChild(emoji);
+      const deltaX = rectCart.left + rectCart.width / 2 - (rectBtn.left + rectBtn.width / 2);
+      const deltaY = rectCart.top + rectCart.height / 2 - (rectBtn.top + rectBtn.height / 2);
+      emoji.animate([
+        { transform: 'translate(0,0) scale(1)', opacity: 1 },
+        { transform: `translate(${deltaX}px, ${deltaY}px) scale(0.2)`, opacity: 0 }
+      ], {
+        duration: 700,
+        easing: 'ease-in-out'
+      }).onfinish = () => {
+        document.body.removeChild(emoji);
+      };
+    }
+
     function actualizarCarritoUI() {
       localStorage.setItem('ferre_v2_cart', JSON.stringify(carrito));
       const list = document.getElementById('cartList');
@@ -272,12 +509,17 @@
       carrito.forEach((p, i) => {
         sum += (p.precio * p.cantidad);
         itemsCount += p.cantidad;
+        const detalles = [];
+        if (p.tamanioSeleccionado) detalles.push('Tamaño: ' + p.tamanioSeleccionado);
+        if (p.colorSeleccionado) detalles.push('Color: ' + p.colorSeleccionado);
+        const detallesTexto = detalles.length ? detalles.join(' | ') : '';
         list.innerHTML += `
           <div class="cart-item">
             <img src="${p.foto}" class="cart-img-min">
             <div>
               <div style="font-weight:bold; font-size:0.9rem">${p.nombre}</div>
               <div style="font-size:0.8rem; color:#64748b">$${p.precio} c/u</div>
+              ${detallesTexto ? `<div style="font-size:0.7rem; color:#94a3b8; margin-top:2px">${detallesTexto}</div>` : ''}
               <button class="btn-delete-item" onclick="borrarDelCarrito(${i})">Borrar producto</button>
             </div>
             <div style="text-align:right">
@@ -295,34 +537,154 @@
     }
 
     window.enviarWhatsApp = () => {
+      if(!carrito.length) return;
+      const copiaCarrito = carrito.map(p => ({...p}));
+      const cantidadesPorProducto = {};
+      copiaCarrito.forEach(p => {
+        if (!cantidadesPorProducto[p.id]) cantidadesPorProducto[p.id] = 0;
+        cantidadesPorProducto[p.id] += p.cantidad;
+      });
+
+      Object.keys(cantidadesPorProducto).forEach(id => {
+        const prod = productos.find(x => x.id === id);
+        if (!prod || typeof prod.stock !== 'number') return;
+        const nuevoStock = Math.max(0, prod.stock - cantidadesPorProducto[id]);
+        prod.stock = nuevoStock;
+        update(ref(db, 'productos/'+id), { stock: nuevoStock });
+      });
+
       let msg = `🏗️ *PEDIDO FERRETERÍA MASTER*\n\n`;
       let total = 0;
-      carrito.forEach(p => {
-        msg += `📦 *${p.nombre}*\n   Cant: ${p.cantidad} x $${p.precio} = *$${p.precio * p.cantidad}*\n`;
-        total += (p.precio * p.cantidad);
+      copiaCarrito.forEach(p => {
+        const subtotal = p.precio * p.cantidad;
+        const detalles = [];
+        if (p.tamanioSeleccionado) detalles.push(`Tamaño: ${p.tamanioSeleccionado}`);
+        if (p.colorSeleccionado) detalles.push(`Color: ${p.colorSeleccionado}`);
+        const detallesTexto = detalles.length ? ` (${detalles.join(' | ')})` : '';
+        msg += `📦 *${p.nombre}*${detallesTexto}\n   Cant: ${p.cantidad} x $${p.precio} = *$${subtotal.toLocaleString()}*\n\n`;
+        total += subtotal;
       });
+      msg += `🔹 _Artículos en carrito:_ *${copiaCarrito.reduce((acc, p) => acc + p.cantidad, 0)}*\n`;
       msg += `\n💰 *TOTAL FINAL:* $${total.toLocaleString()}\n\n✅ _Confirmar pedido por favor._`;
+
+      carrito = [];
+      actualizarCarritoUI();
+      render();
+
       window.open(`https://wa.me/5491122334455?text=${encodeURIComponent(msg)}`, '_blank');
     };
+
+    const searchInput = document.getElementById('searchInput');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        filtroTexto = e.target.value.toLowerCase();
+        render();
+      });
+    }
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filtroCategoria = btn.dataset.cat;
+        render();
+      });
+    });
+
+    function filtrarProductos() {
+      return productos.filter(p => {
+        const coincideTexto =
+          !filtroTexto ||
+          (p.nombre && p.nombre.toLowerCase().includes(filtroTexto)) ||
+          (p.marca && p.marca.toLowerCase().includes(filtroTexto)) ||
+          (p.categoria && p.categoria.toLowerCase().includes(filtroTexto));
+        const coincideCategoria =
+          filtroCategoria === 'all' ||
+          (p.categoria === filtroCategoria);
+        return coincideTexto && coincideCategoria;
+      });
+    }
+
+    function renderGaleria() {
+      const cont = document.getElementById('galeriaSuperior');
+      if(!cont) return;
+      cont.innerHTML = '';
+      galeria.forEach(g => {
+        cont.innerHTML += `
+          <div class="gallery-item">
+            <img src="${g.url}">
+            ${isAdmin ? `<button class="gallery-delete" onclick="borrarImgGaleria('${g.id}')">✕</button>` : ''}
+          </div>
+        `;
+      });
+    }
 
     function render() {
       const grid = document.getElementById('listaProductos');
       grid.innerHTML = '';
-      productos.forEach(p => {
+      const lista = filtrarProductos();
+      lista.forEach(p => {
+        const opcionesTamanio = parseOpciones(p.tamanio);
+        const opcionesColor = parseOpciones(p.color);
+        const tieneStockNumero = typeof p.stock === 'number';
+        const stockNumero = tieneStockNumero ? p.stock : null;
+        let stockHtml = '';
+        let stockClase = '';
+        if (tieneStockNumero) {
+          if (stockNumero <= 0) stockClase = 'stock-badge-out';
+          else if (stockNumero <= 5) stockClase = 'stock-badge-low';
+          else stockClase = 'stock-badge-ok';
+          stockHtml = `<div class="stock-badge ${stockClase}"><span class="stock-dot"></span>Stock: ${stockNumero}</div>`;
+        }
+        const disabledAttr = tieneStockNumero && stockNumero <= 0 ? 'disabled' : '';
+        const textoBoton = tieneStockNumero && stockNumero <= 0 ? 'SIN STOCK' : 'AGREGAR AL CARRITO';
         grid.innerHTML += `
           <div class="card">
             ${isAdmin ? `<div style="position:absolute; top:10px; right:10px; display:flex; gap:5px; z-index:10">
               <button onclick="editar('${p.id}')" style="background:var(--success); color:white; border:none; padding:8px; border-radius:5px; cursor:pointer">✏️</button>
               <button onclick="borrarDB('${p.id}')" style="background:var(--danger); color:white; border:none; padding:8px; border-radius:5px; cursor:pointer">🗑️</button>
             </div>` : ''}
+            ${isAdmin && modoEliminar ? `<button class="card-delete-x" onclick="borrarDB('${p.id}')">X</button>` : ''}
             <div class="card-img"><img src="${p.foto}"></div>
             <div class="card-info">
               <span style="font-size:0.7rem; color:var(--accent); font-weight:800; text-transform:uppercase">${p.marca || 'Genérico'}</span>
               <h3 style="margin:5px 0; font-size:1.1rem">${p.nombre}</h3>
-              <p style="font-size:0.75rem; color:#64748b; margin-bottom:10px">${p.tamanio ? 'Medida: '+p.tamanio : ''}</p>
+              ${stockHtml}
+              <div class="specs-list">
+                <div>
+                  <div class="specs-label">Medida</div>
+                  <div class="specs-value">
+                    ${opcionesTamanio.length ? `
+                      <select class="specs-select" data-type="tamanio">
+                        ${opcionesTamanio.map(o => `<option value="${o}">${o}</option>`).join('')}
+                      </select>
+                    ` : (p.tamanio || 'N/A')}
+                  </div>
+                </div>
+                <div>
+                  <div class="specs-label">Color</div>
+                  <div class="specs-value">
+                    ${opcionesColor.length ? `
+                      <select class="specs-select" data-type="color">
+                        ${opcionesColor.map(o => `<option value="${o}">${o}</option>`).join('')}
+                      </select>
+                    ` : (p.color || 'N/A')}
+                  </div>
+                </div>
+                <div>
+                  <div class="specs-label">Material</div>
+                  <div class="specs-value">${p.material || 'N/A'}</div>
+                </div>
+                <div>
+                  <div class="specs-label">Garantía</div>
+                  <div class="specs-value">${p.garantia || 'N/A'}</div>
+                </div>
+              </div>
               <div style="font-size:1.5rem; font-weight:900; margin-bottom:15px">$${p.precio.toLocaleString()}</div>
-              <button class="btn-add" onclick="agregar('${p.id}')">
-                <i class="fas fa-cart-plus"></i> AGREGAR AL CARRITO
+              <button class="btn-add" ${disabledAttr} onclick="agregar('${p.id}', this)">
+                <i class="fas fa-cart-plus"></i> ${textoBoton}
               </button>
             </div>
           </div>`;
