@@ -70,6 +70,9 @@
     .specs-label { font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.65rem; color: #94a3b8; }
     .specs-value { font-weight: 600; color: #0f172a; }
     .specs-select { width: 100%; padding: 4px 6px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.7rem; background: white; }
+    .option-group { display: flex; flex-wrap: wrap; gap: 6px; }
+    .option-btn { padding: 4px 8px; border-radius: 999px; border: 1px solid #cbd5e1; font-size: 0.7rem; background: #f8fafc; cursor: pointer; }
+    .option-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
     .card-delete-x { position: absolute; top: 10px; left: 10px; width: 28px; height: 28px; border-radius: 999px; border: none; background: var(--danger); color: white; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .stock-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; margin-bottom: 8px; }
     .stock-badge-ok { background: #dcfce7; color: #166534; }
@@ -87,7 +90,38 @@
 
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
     .modal-content { background: white; padding: 30px; border-radius: 16px; width: 95%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
-  </style>
+.option-group {
+  margin: 12px 0;
+}
+
+.option-group span {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.option-btn {
+  margin: 4px;
+  padding: 8px 14px;
+  border: 2px solid #000;
+  border-radius: 6px;
+  background-color: #222;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.option-btn:hover {
+  background-color: #c00; /* rojo hover */
+  border-color: #c00;
+}
+
+.option-btn.active {
+  background-color: #0a3; /* verde oscuro activo */
+  border-color: #0a3;
+  color: #fff;
+}  </style>
 </head>
 <body>
 
@@ -246,6 +280,42 @@
     </div>
   </div>
 
+  <div class="modal" id="modalVariantes">
+    <div class="modal-content" style="max-width:480px">
+      <h3 id="varTitle">Seleccionar opciones del producto</h3>
+      <input type="hidden" id="varProdId">
+      <div class="product-options">
+  <h3>Opciones del tornillo</h3>
+
+  <div class="option-group" data-group="diametro">
+    <span>Diámetro:</span>
+    <button class="option-btn">4mm</button>
+    <button class="option-btn">6mm</button>
+    <button class="option-btn">8mm</button>
+    <button class="option-btn">10mm</button>
+  </div>
+
+  <div class="option-group" data-group="longitud">
+    <span>Longitud:</span>
+    <button class="option-btn">20mm</button>
+    <button class="option-btn">30mm</button>
+    <button class="option-btn">40mm</button>
+    <button class="option-btn">50mm</button>
+  </div>
+
+  <div class="option-group" data-group="cabeza">
+    <span>Tipo de cabeza:</span>
+    <button class="option-btn">Plana</button>
+    <button class="option-btn">Phillips</button>
+    <button class="option-btn">Hexagonal</button>
+  </div>
+</div>
+      <div id="varOptions" style="margin-top:15px; display:flex; flex-direction:column; gap:12px"></div>
+      <button class="btn-add" style="margin-top:20px" onclick="confirmarVariantes()">CONFIRMAR Y AGREGAR</button>
+      <button class="btn-add" style="background:#e5e7eb; color:#111827; margin-top:10px" onclick="cerrarModal('modalVariantes')">CANCELAR</button>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -273,7 +343,9 @@
           id: item.id,
           cantidad: typeof item.cantidad === 'number' && item.cantidad > 0 ? item.cantidad : 1,
           tamanioSeleccionado: item.tamanioSeleccionado || '',
-          colorSeleccionado: item.colorSeleccionado || ''
+          colorSeleccionado: item.colorSeleccionado || '',
+          materialSeleccionado: item.materialSeleccionado || '',
+          garantiaSeleccionada: item.garantiaSeleccionada || ''
         }));
       }
     } catch (e) {
@@ -318,6 +390,155 @@
       cerrarModal('modalProd');
       render();
       renderGaleria();
+    };
+
+    window.abrirVariantes = (id) => {
+      const p = productos.find(x => x.id === id);
+      if (!p) return;
+      const opcionesTamanio = parseOpciones(p.tamanio);
+      const opcionesColor = parseOpciones(p.color);
+      const opcionesMaterial = parseOpciones(p.material);
+      const opcionesGarantia = parseOpciones(p.garantia);
+      const cont = document.getElementById('varOptions');
+      const title = document.getElementById('varTitle');
+      const hidden = document.getElementById('varProdId');
+      if (!cont || !title || !hidden) return;
+      hidden.value = id;
+      title.innerText = p.nombre || 'Seleccionar opciones del producto';
+      cont.innerHTML = '';
+      if (opcionesTamanio.length) {
+        cont.innerHTML += `
+          <div>
+            <div class="specs-label">Medida</div>
+            <div class="option-group" data-group="tamanio">
+              ${opcionesTamanio.map((o, idx) => `
+                <button type="button" class="option-btn ${idx === 0 ? 'active' : ''}" data-type="tamanio" data-value="${o}">${o}</button>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } else if (p.tamanio) {
+        cont.innerHTML += `
+          <div>
+            <div class="specs-label">Medida</div>
+            <div class="specs-value">${p.tamanio}</div>
+          </div>
+        `;
+      }
+      if (opcionesColor.length) {
+        cont.innerHTML += `
+          <div>
+            <div class="specs-label">Color</div>
+            <div class="option-group" data-group="color">
+              ${opcionesColor.map((o, idx) => `
+                <button type="button" class="option-btn ${idx === 0 ? 'active' : ''}" data-type="color" data-value="${o}">${o}</button>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } else if (p.color) {
+        cont.innerHTML += `
+          <div>
+            <div class="specs-label">Color</div>
+            <div class="specs-value">${p.color}</div>
+          </div>
+        `;
+      }
+      if (opcionesMaterial.length) {
+        cont.innerHTML += `
+          <div>
+            <div class="specs-label">Material</div>
+            <div class="option-group" data-group="material">
+              ${opcionesMaterial.map((o, idx) => `
+                <button type="button" class="option-btn ${idx === 0 ? 'active' : ''}" data-type="material" data-value="${o}">${o}</button>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } else if (p.material) {
+        cont.innerHTML += `
+          <div>
+            <div class="specs-label">Material</div>
+            <div class="specs-value">${p.material}</div>
+          </div>
+        `;
+      }
+      if (opcionesGarantia.length) {
+        cont.innerHTML += `
+          <div>
+            <div class="specs-label">Garantía</div>
+            <div class="option-group" data-group="garantia">
+              ${opcionesGarantia.map((o, idx) => `
+                <button type="button" class="option-btn ${idx === 0 ? 'active' : ''}" data-type="garantia" data-value="${o}">${o}</button>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } else if (p.garantia) {
+        cont.innerHTML += `
+          <div>
+            <div class="specs-label">Garantía</div>
+            <div class="specs-value">${p.garantia}</div>
+          </div>
+        `;
+      }
+      const groups = cont.querySelectorAll('.option-group');
+      groups.forEach(group => {
+        group.querySelectorAll('.option-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+          });
+        });
+      });
+      abrirModal('modalVariantes');
+    };
+
+    window.confirmarVariantes = () => {
+      const id = document.getElementById('varProdId').value;
+      if (!id) { cerrarModal('modalVariantes'); return; }
+      const p = productos.find(x => x.id === id);
+      if (!p) { cerrarModal('modalVariantes'); return; }
+      const cont = document.getElementById('varOptions');
+      let tamSel = p.tamanio || '';
+      let colSel = p.color || '';
+      if (cont) {
+        const btnTam = cont.querySelector('.option-btn[data-type="tamanio"].active');
+        if (btnTam) tamSel = btnTam.dataset.value;
+        const btnCol = cont.querySelector('.option-btn[data-type="color"].active');
+        if (btnCol) colSel = btnCol.dataset.value;
+      }
+      let matSel = p.material || '';
+      let garSel = p.garantia || '';
+      if (cont) {
+        const btnMat = cont.querySelector('.option-btn[data-type="material"].active');
+        if (btnMat) matSel = btnMat.dataset.value;
+        const btnGar = cont.querySelector('.option-btn[data-type="garantia"].active');
+        if (btnGar) garSel = btnGar.dataset.value;
+      }
+      const itemExistente = carrito.find(
+        x =>
+          x.id === id &&
+          x.tamanioSeleccionado === tamSel &&
+          x.colorSeleccionado === colSel &&
+          x.materialSeleccionado === matSel &&
+          x.garantiaSeleccionada === garSel
+      );
+      if(itemExistente) { 
+        itemExistente.cantidad++; 
+      } else { 
+        carrito.push({
+          id,
+          cantidad: 1,
+          tamanioSeleccionado: tamSel,
+          colorSeleccionado: colSel,
+          materialSeleccionado: matSel,
+          garantiaSeleccionada: garSel
+        }); 
+      }
+      cerrarModal('modalVariantes');
+      lanzarEfectos();
+      actualizarCarritoUI();
     };
 
     window.mostrarConfirmacion = (mensaje, onConfirm) => {
@@ -452,13 +673,15 @@
       if (btn && btn.closest) {
         const card = btn.closest('.card');
         if (card) {
-          const selTam = card.querySelector('select[data-type="tamanio"]');
-          if (selTam) tamSel = selTam.value;
-          const selCol = card.querySelector('select[data-type="color"]');
-          if (selCol) colSel = selCol.value;
+          const btnTam = card.querySelector('.option-btn[data-type="tamanio"].active');
+          if (btnTam) tamSel = btnTam.dataset.value;
+          const btnCol = card.querySelector('.option-btn[data-type="color"].active');
+          if (btnCol) colSel = btnCol.dataset.value;
         }
       }
-      const itemExistente = carrito.find(x => x.id === id && x.tamanioSeleccionado === tamSel && x.colorSeleccionado === colSel);
+      const itemExistente = carrito.find(
+        x => x.id === id && x.tamanioSeleccionado === tamSel && x.colorSeleccionado === colSel
+      );
       if(itemExistente) { 
         itemExistente.cantidad++; 
       } else { 
@@ -518,7 +741,9 @@
           id: item.id,
           cantidad: item.cantidad,
           tamanioSeleccionado: item.tamanioSeleccionado || '',
-          colorSeleccionado: item.colorSeleccionado || ''
+          colorSeleccionado: item.colorSeleccionado || '',
+          materialSeleccionado: item.materialSeleccionado || '',
+          garantiaSeleccionada: item.garantiaSeleccionada || ''
         }));
         localStorage.setItem('ferre_v2_cart', JSON.stringify(compactCart));
       } catch (e) {
@@ -541,6 +766,8 @@
         const detalles = [];
         if (item.tamanioSeleccionado) detalles.push('Tamaño: ' + item.tamanioSeleccionado);
         if (item.colorSeleccionado) detalles.push('Color: ' + item.colorSeleccionado);
+        if (item.materialSeleccionado) detalles.push('Material: ' + item.materialSeleccionado);
+        if (item.garantiaSeleccionada) detalles.push('Garantía: ' + item.garantiaSeleccionada);
         const detallesTexto = detalles.length ? detalles.join(' | ') : '';
         list.innerHTML += `
           <div class="cart-item">
@@ -559,7 +786,8 @@
               </div>
               <div style="font-weight:900; margin-top:5px">$${subtotal.toLocaleString()}</div>
             </div>
-          </div>`;
+          </div>
+          `;
       });
       count.innerText = itemsCount;
       total.innerText = '$' + sum.toLocaleString();
@@ -592,6 +820,8 @@
         const detalles = [];
         if (item.tamanioSeleccionado) detalles.push(`Tamaño: ${item.tamanioSeleccionado}`);
         if (item.colorSeleccionado) detalles.push(`Color: ${item.colorSeleccionado}`);
+        if (item.materialSeleccionado) detalles.push(`Material: ${item.materialSeleccionado}`);
+        if (item.garantiaSeleccionada) detalles.push(`Garantía: ${item.garantiaSeleccionada}`);
         const detallesTexto = detalles.length ? ` (${detalles.join(' | ')})` : '';
         msg += `📦 *${prod.nombre || ''}*${detallesTexto}\n   Cant: ${item.cantidad} x $${precioUnit} = *$${subtotal.toLocaleString()}*\n\n`;
         total += subtotal;
@@ -689,9 +919,16 @@
                   <div class="specs-label">Medida</div>
                   <div class="specs-value">
                     ${opcionesTamanio.length ? `
-                      <select class="specs-select" data-type="tamanio">
-                        ${opcionesTamanio.map(o => `<option value="${o}">${o}</option>`).join('')}
-                      </select>
+                      <div class="option-group" data-group="tamanio">
+                        ${opcionesTamanio.map((o, idx) => `
+                          <button 
+                            type="button" 
+                            class="option-btn ${idx === 0 ? 'active' : ''}" 
+                            data-type="tamanio" 
+                            data-value="${o}"
+                          >${o}</button>
+                        `).join('')}
+                      </div>
                     ` : (p.tamanio || 'N/A')}
                   </div>
                 </div>
@@ -699,13 +936,21 @@
                   <div class="specs-label">Color</div>
                   <div class="specs-value">
                     ${opcionesColor.length ? `
-                      <select class="specs-select" data-type="color">
-                        ${opcionesColor.map(o => `<option value="${o}">${o}</option>`).join('')}
-                      </select>
+                      <div class="option-group" data-group="color">
+                        ${opcionesColor.map((o, idx) => `
+                          <button 
+                            type="button" 
+                            class="option-btn ${idx === 0 ? 'active' : ''}" 
+                            data-type="color" 
+                            data-value="${o}"
+                          >${o}</button>
+                        `).join('')}
+                      </div>
                     ` : (p.color || 'N/A')}
                   </div>
                 </div>
                 <div>
+                  
                   <div class="specs-label">Material</div>
                   <div class="specs-value">${p.material || 'N/A'}</div>
                 </div>
@@ -715,13 +960,34 @@
                 </div>
               </div>
               <div style="font-size:1.5rem; font-weight:900; margin-bottom:15px">$${p.precio.toLocaleString()}</div>
-              <button class="btn-add" ${disabledAttr} onclick="agregar('${p.id}', this)">
+              <button class="btn-add" ${disabledAttr} onclick="abrirVariantes('${p.id}')">
                 <i class="fas fa-cart-plus"></i> ${textoBoton}
               </button>
             </div>
           </div>`;
+
+      });
+
+      const optionGroups = document.querySelectorAll('.option-group');
+      optionGroups.forEach(group => {
+        group.querySelectorAll('.option-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+          });
+        });
       });
     }
+    document.querySelectorAll(".option-group").forEach(group => {
+  group.querySelectorAll(".option-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      // desmarcar todos en el grupo
+      group.querySelectorAll(".option-btn").forEach(b => b.classList.remove("active"));
+      // marcar el seleccionado
+      btn.classList.add("active");
+    });
+  });
+});
   </script>
 </body>
 </html>
