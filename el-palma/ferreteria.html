@@ -248,7 +248,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, push, set, remove, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCuHSlv7WEmoEWh96rWWCnTi7AwgN-7Hd4",
@@ -503,11 +503,14 @@
       const list = document.getElementById('cartList');
       const count = document.getElementById('cartCount');
       const total = document.getElementById('cartTotal');
+      if (!list || !count || !total) return;
       list.innerHTML = '';
       let sum = 0; let itemsCount = 0;
 
       carrito.forEach((p, i) => {
-        sum += (p.precio * p.cantidad);
+        const precioUnit = typeof p.precio === 'number' ? p.precio : parseFloat(p.precio) || 0;
+        const subtotal = precioUnit * p.cantidad;
+        sum += subtotal;
         itemsCount += p.cantidad;
         const detalles = [];
         if (p.tamanioSeleccionado) detalles.push('Tamaño: ' + p.tamanioSeleccionado);
@@ -515,10 +518,10 @@
         const detallesTexto = detalles.length ? detalles.join(' | ') : '';
         list.innerHTML += `
           <div class="cart-item">
-            <img src="${p.foto}" class="cart-img-min">
+            <img src="${p.foto || 'https://via.placeholder.com/200'}" class="cart-img-min">
             <div>
-              <div style="font-weight:bold; font-size:0.9rem">${p.nombre}</div>
-              <div style="font-size:0.8rem; color:#64748b">$${p.precio} c/u</div>
+              <div style="font-weight:bold; font-size:0.9rem">${p.nombre || ''}</div>
+              <div style="font-size:0.8rem; color:#64748b">$${precioUnit} c/u</div>
               ${detallesTexto ? `<div style="font-size:0.7rem; color:#94a3b8; margin-top:2px">${detallesTexto}</div>` : ''}
               <button class="btn-delete-item" onclick="borrarDelCarrito(${i})">Borrar producto</button>
             </div>
@@ -528,7 +531,7 @@
                 <input class="qty-input" readonly value="${p.cantidad}">
                 <button class="btn-qty" onclick="cambiarCantidad(${i}, 1)">+</button>
               </div>
-              <div style="font-weight:900; margin-top:5px">$${(p.precio * p.cantidad).toLocaleString()}</div>
+              <div style="font-weight:900; margin-top:5px">$${subtotal.toLocaleString()}</div>
             </div>
           </div>`;
       });
@@ -550,7 +553,8 @@
         if (!prod || typeof prod.stock !== 'number') return;
         const nuevoStock = Math.max(0, prod.stock - cantidadesPorProducto[id]);
         prod.stock = nuevoStock;
-        update(ref(db, 'productos/'+id), { stock: nuevoStock });
+        const { id: _, ...resto } = prod;
+        set(ref(db, 'productos/'+id), { ...resto, stock: nuevoStock });
       });
 
       let msg = `🏗️ *PEDIDO FERRETERÍA MASTER*\n\n`;
