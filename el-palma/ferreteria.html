@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ferretería Master | Gestión Profesional</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0f172a; --accent: #2563eb; --success: #10b981;
+      --danger: #e11d48; --bg: #f8fafc; --border: #cbd5e1;
+    }
+
+    * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    body { background: var(--bg); margin: 0; padding-top: 130px; }
+
+    /* --- CABECERA --- */
+    .header-fixed { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: var(--primary); color: white; }
+    .nav-top { display: flex; justify-content: space-between; padding: 15px 5%; align-items: center; }
+    .logo { font-size: 1.5rem; font-weight: 900; color: white; text-decoration: none; }
+    .logo span { color: var(--accent); }
+    .nav-icons { display: flex; gap: 20px; }
+    .icon-btn { background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer; position: relative; }
+    .badge { position: absolute; top: -5px; right: -8px; background: var(--danger); font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; }
+
+    /* --- CARRITO ESTILIZADO --- */
+    .cart-header { background: var(--accent); color: white; padding: 20px; border-radius: 12px 12px 0 0; text-align: center; margin: -30px -30px 20px -30px; }
+    .cart-item { display: grid; grid-template-columns: 80px 1fr 120px; gap: 15px; padding: 15px 0; border-bottom: 1px solid #eee; align-items: center; }
+    .cart-img-min { width: 70px; height: 70px; object-fit: contain; border: 1px solid #eee; border-radius: 8px; }
+    .qty-controls { display: flex; align-items: center; gap: 8px; background: #f1f5f9; padding: 5px; border-radius: 8px; }
+    .btn-qty { width: 25px; height: 25px; border: none; background: var(--primary); color: white; border-radius: 4px; cursor: pointer; }
+    .qty-input { width: 40px; text-align: center; border: none; background: transparent; font-weight: bold; }
+    .btn-delete-item { color: var(--danger); background: none; border: none; cursor: pointer; font-size: 0.8rem; text-decoration: underline; margin-top: 5px; }
+
+    /* --- FORMULARIO AVANZADO --- */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .full-width { grid-column: span 2; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; }
+    label { font-size: 0.75rem; font-weight: bold; color: var(--primary); text-transform: uppercase; }
+
+    /* --- CATALOGO --- */
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+    .card { background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; position: relative; transition: 0.3s; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    .card-img { height: 220px; padding: 20px; display: flex; align-items: center; justify-content: center; background: white; }
+    .card-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .card-info { padding: 20px; }
+    .btn-add { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+    /* --- ANIMACIONES --- */
+    #happy-cart { position: fixed; bottom: -150px; left: 50%; transform: translateX(-50%); z-index: 3000; transition: 0.5s; }
+    #happy-cart.active { bottom: 30px; }
+    .badge-anim { animation: bounce 1.5s; }
+    @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.6); background: var(--success); } }
+
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+    .modal-content { background: white; padding: 30px; border-radius: 16px; width: 95%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+  </style>
+</head>
+<body>
+
+  <div id="happy-cart">
+    <svg width="100" height="80"><circle cx="40" cy="60" r="8" fill="#333"><animateTransform attributeName="transform" type="rotate" from="0 40 60" to="360 40 60" dur="0.5s" repeatCount="indefinite"/></circle><circle cx="70" cy="60" r="8" fill="#333"><animateTransform attributeName="transform" type="rotate" from="0 70 60" to="360 70 60" dur="0.5s" repeatCount="indefinite"/></circle><path d="M10 10 H30 L40 50 H80 L90 10" fill="none" stroke="#2563eb" stroke-width="4"/><circle cx="50" cy="25" r="3" fill="black"/><circle cx="70" cy="25" r="3" fill="black"/><path d="M55 35 Q60 40 65 35" stroke="black" fill="none" stroke-width="2"/></svg>
+  </div>
+
+  <header class="header-fixed">
+    <div class="nav-top">
+      <a href="#" class="logo">FERRE<span>MASTER</span></a>
+      <div class="nav-icons">
+        <button class="icon-btn" onclick="abrirModal('modalClave')"><i class="fas fa-tools"></i></button>
+        <button class="icon-btn" onclick="abrirModal('modalCarrito')">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="badge" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="grid" id="listaProductos"></div>
+  </div>
+
+  <div class="modal" id="modalCarrito">
+    <div class="modal-content">
+      <div class="cart-header">
+        <h2 style="margin:0">📦 MI PEDIDO</h2>
+        <p style="margin:5px 0 0 0; opacity:0.8">Revisa tus productos antes de enviar</p>
+      </div>
+      <div id="cartList"></div>
+      <div style="margin-top: 20px; padding: 20px; background: #f8fafc; border-radius: 12px;">
+        <div style="display:flex; justify-content:space-between; font-size:1.4rem; font-weight:900;">
+          <span>TOTAL:</span><span id="cartTotal" style="color:var(--accent)">$0</span>
+        </div>
+        <button class="btn-add" style="background:#25d366; margin-top:15px;" onclick="enviarWhatsApp()">
+          <i class="fab fa-whatsapp"></i> CONFIRMAR PEDIDO POR WHATSAPP
+        </button>
+        <button class="btn-add" style="background:#64748b; margin-top:10px;" onclick="cerrarModal('modalCarrito')">SEGUIR COMPRANDO</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modalProd">
+    <div class="modal-content">
+      <h3>🛠️ FICHA TÉCNICA DEL PRODUCTO</h3>
+      <input type="hidden" id="pId">
+      <div class="form-grid">
+        <div class="full-width">
+          <label>Nombre del Producto</label>
+          <input type="text" id="pNom" placeholder="Ej: Taladro Percutor 13mm">
+        </div>
+        <div>
+          <label>Categoría</label>
+          <select id="pCat">
+            <option>Herramientas Eléctricas</option><option>Manuales</option>
+            <option>Tornillería</option><option>Electricidad</option><option>Pintura</option>
+          </select>
+        </div>
+        <div>
+          <label>Precio ($)</label>
+          <input type="number" id="pPre">
+        </div>
+        <div>
+          <label>Marca</label>
+          <input type="text" id="pMarca" placeholder="Ej: DeWalt, Bosch">
+        </div>
+        <div>
+          <label>Medidas / Tamaño</label>
+          <input type="text" id="pTamanio" placeholder="Ej: 10 pulgadas / 1/2 pulg">
+        </div>
+        <div>
+          <label>Material / Peso</label>
+          <input type="text" id="pMaterial" placeholder="Ej: Acero Inox / 2kg">
+        </div>
+        <div>
+          <label>Garantía</label>
+          <input type="text" id="pGarantia" placeholder="Ej: 6 meses">
+        </div>
+        <div class="full-width">
+          <label>Imagen del Producto</label>
+          <input type="file" id="pImg">
+        </div>
+        <div class="full-width">
+          <label>Descripción detallada</label>
+          <textarea id="pDesc" rows="3"></textarea>
+        </div>
+      </div>
+      <button class="btn-add" style="margin-top:20px" onclick="guardar()">GUARDAR PRODUCTO</button>
+      <button class="btn-add" style="background:#eee; color:#333; margin-top:10px" onclick="cerrarModal('modalProd')">CANCELAR</button>
+    </div>
+  </div>
+
+  <div class="modal" id="modalClave">
+    <div class="modal-content" style="text-align:center">
+      <h3>🔐 ACCESO PANEL</h3>
+      <input type="password" id="passInput" placeholder="Clave">
+      <button class="btn-add" onclick="login()">INGRESAR</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyCuHSlv7WEmoEWh96rWWCnTi7AwgN-7Hd4", databaseURL: "https://tatuajes-e7c8f-default-rtdb.firebaseio.com/" };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const dbRef = ref(db, 'productos');
+
+    let productos = [];
+    let carrito = JSON.parse(localStorage.getItem('ferre_v2_cart')) || [];
+    let isAdmin = false;
+
+    onValue(dbRef, (snap) => {
+      productos = [];
+      snap.forEach(c => { productos.push({id: c.key, ...c.val()}); });
+      render();
+      actualizarCarritoUI();
+    });
+
+    window.abrirModal = (id) => document.getElementById(id).style.display = 'flex';
+    window.cerrarModal = (id) => document.getElementById(id).style.display = 'none';
+
+    window.login = () => {
+      if(document.getElementById('passInput').value === '1234') {
+        isAdmin = true; cerrarModal('modalClave'); render(); abrirModal('modalProd');
+      }
+    };
+
+    window.guardar = () => {
+      const id = document.getElementById('pId').value;
+      const file = document.getElementById('pImg').files[0];
+      const data = {
+        nombre: document.getElementById('pNom').value,
+        precio: parseFloat(document.getElementById('pPre').value),
+        categoria: document.getElementById('pCat').value,
+        marca: document.getElementById('pMarca').value,
+        tamanio: document.getElementById('pTamanio').value,
+        material: document.getElementById('pMaterial').value,
+        garantia: document.getElementById('pGarantia').value,
+        desc: document.getElementById('pDesc').value
+      };
+
+      const final = (url) => {
+        data.foto = url || (id ? productos.find(p=>p.id===id).foto : 'https://via.placeholder.com/200');
+        id ? set(ref(db, 'productos/'+id), data) : push(dbRef, data);
+        cerrarModal('modalProd');
+      };
+
+      if(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => final(e.target.result);
+        reader.readAsDataURL(file);
+      } else { final(null); }
+    };
+
+    window.editar = (id) => {
+      const p = productos.find(x => x.id === id);
+      document.getElementById('pId').value = id;
+      document.getElementById('pNom').value = p.nombre;
+      document.getElementById('pPre').value = p.precio;
+      document.getElementById('pCat').value = p.categoria;
+      document.getElementById('pMarca').value = p.marca || '';
+      document.getElementById('pTamanio').value = p.tamanio || '';
+      document.getElementById('pMaterial').value = p.material || '';
+      document.getElementById('pGarantia').value = p.garantia || '';
+      document.getElementById('pDesc').value = p.desc || '';
+      abrirModal('modalProd');
+    };
+
+    window.borrarDB = (id) => { if(confirm('¿Borrar de la tienda?')) remove(ref(db, 'productos/'+id)); };
+
+    // --- LOGICA CARRITO ---
+    window.agregar = (id) => {
+      const itemExistente = carrito.find(x => x.id === id);
+      if(itemExistente) { itemExistente.cantidad++; } 
+      else { 
+        const p = productos.find(x => x.id === id);
+        carrito.push({...p, cantidad: 1}); 
+      }
+      lanzarEfectos();
+      actualizarCarritoUI();
+    };
+
+    window.cambiarCantidad = (index, delta) => {
+      carrito[index].cantidad += delta;
+      if(carrito[index].cantidad < 1) carrito[index].cantidad = 1;
+      actualizarCarritoUI();
+    };
+
+    window.borrarDelCarrito = (index) => {
+      carrito.splice(index, 1);
+      actualizarCarritoUI();
+    };
+
+    function lanzarEfectos() {
+      const h = document.getElementById('happy-cart');
+      h.classList.add('active');
+      const b = document.getElementById('cartCount');
+      b.classList.remove('badge-anim'); void b.offsetWidth; b.classList.add('badge-anim');
+      setTimeout(() => h.classList.remove('active'), 1500);
+    }
+
+    function actualizarCarritoUI() {
+      localStorage.setItem('ferre_v2_cart', JSON.stringify(carrito));
+      const list = document.getElementById('cartList');
+      const count = document.getElementById('cartCount');
+      const total = document.getElementById('cartTotal');
+      list.innerHTML = '';
+      let sum = 0; let itemsCount = 0;
+
+      carrito.forEach((p, i) => {
+        sum += (p.precio * p.cantidad);
+        itemsCount += p.cantidad;
+        list.innerHTML += `
+          <div class="cart-item">
+            <img src="${p.foto}" class="cart-img-min">
+            <div>
+              <div style="font-weight:bold; font-size:0.9rem">${p.nombre}</div>
+              <div style="font-size:0.8rem; color:#64748b">$${p.precio} c/u</div>
+              <button class="btn-delete-item" onclick="borrarDelCarrito(${i})">Borrar producto</button>
+            </div>
+            <div style="text-align:right">
+              <div class="qty-controls">
+                <button class="btn-qty" onclick="cambiarCantidad(${i}, -1)">-</button>
+                <input class="qty-input" readonly value="${p.cantidad}">
+                <button class="btn-qty" onclick="cambiarCantidad(${i}, 1)">+</button>
+              </div>
+              <div style="font-weight:900; margin-top:5px">$${(p.precio * p.cantidad).toLocaleString()}</div>
+            </div>
+          </div>`;
+      });
+      count.innerText = itemsCount;
+      total.innerText = '$' + sum.toLocaleString();
+    }
+
+    window.enviarWhatsApp = () => {
+      let msg = `🏗️ *PEDIDO FERRETERÍA MASTER*\n\n`;
+      let total = 0;
+      carrito.forEach(p => {
+        msg += `📦 *${p.nombre}*\n   Cant: ${p.cantidad} x $${p.precio} = *$${p.precio * p.cantidad}*\n`;
+        total += (p.precio * p.cantidad);
+      });
+      msg += `\n💰 *TOTAL FINAL:* $${total.toLocaleString()}\n\n✅ _Confirmar pedido por favor._`;
+      window.open(`https://wa.me/5491122334455?text=${encodeURIComponent(msg)}`, '_blank');
+    };
+
+    function render() {
+      const grid = document.getElementById('listaProductos');
+      grid.innerHTML = '';
+      productos.forEach(p => {
+        grid.innerHTML += `
+          <div class="card">
+            ${isAdmin ? `<div style="position:absolute; top:10px; right:10px; display:flex; gap:5px; z-index:10">
+              <button onclick="editar('${p.id}')" style="background:var(--success); color:white; border:none; padding:8px; border-radius:5px; cursor:pointer">✏️</button>
+              <button onclick="borrarDB('${p.id}')" style="background:var(--danger); color:white; border:none; padding:8px; border-radius:5px; cursor:pointer">🗑️</button>
+            </div>` : ''}
+            <div class="card-img"><img src="${p.foto}"></div>
+            <div class="card-info">
+              <span style="font-size:0.7rem; color:var(--accent); font-weight:800; text-transform:uppercase">${p.marca || 'Genérico'}</span>
+              <h3 style="margin:5px 0; font-size:1.1rem">${p.nombre}</h3>
+              <p style="font-size:0.75rem; color:#64748b; margin-bottom:10px">${p.tamanio ? 'Medida: '+p.tamanio : ''}</p>
+              <div style="font-size:1.5rem; font-weight:900; margin-bottom:15px">$${p.precio.toLocaleString()}</div>
+              <button class="btn-add" onclick="agregar('${p.id}')">
+                <i class="fas fa-cart-plus"></i> AGREGAR AL CARRITO
+              </button>
+            </div>
+          </div>`;
+      });
+    }
+  </script>
+</body>
+</html>
