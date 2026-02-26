@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Producto Ferretería</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #000000, #8B0000);
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+    h2 {
+      font-size: 26px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #ff3b3b;
+      text-shadow: 0 0 8px rgba(255, 0, 0, 0.7);
+    }
+    input, select, textarea {
+      width: 80%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 14px;
+    }
+    input::placeholder, textarea::placeholder {
+      color: #ccc;
+    }
+    textarea {
+      height: 90px;
+      resize: none;
+    }
+    button {
+      padding: 14px 24px;
+      margin-top: 20px;
+      background: linear-gradient(90deg, #ff0000, #660000);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 12px rgba(255, 0, 0, 0.6);
+    }
+    button:hover {
+      background: linear-gradient(90deg, #660000, #ff0000);
+      transform: scale(1.05);
+      box-shadow: 0 0 18px rgba(255, 0, 0, 0.9);
+    }
+    .producto {
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 25px;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    }
+    .producto img {
+      max-width: 200px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
+    }
+    .producto-info h3 {
+      margin: 10px 0;
+      font-size: 22px;
+      color: #ff3b3b;
+    }
+    .producto-info p {
+      font-size: 14px;
+      color: #ddd;
+    }
+    .opciones {
+      margin-top: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+    .opciones span {
+      background: rgba(255,255,255,0.1);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Generar Código de Producto y Enviar por WhatsApp</h2>
+
+  <input type="text" id="foto" placeholder="Link de la foto del producto">
+  <input type="text" id="nombre" placeholder="Nombre del producto">
+  <textarea id="descripcion" placeholder="Descripción del producto"></textarea>
+  <input type="text" id="precio" placeholder="Precio del producto">
+
+  <h3><span style="text-decoration: underline blue;">Opciones del producto</span></h3>
+  <select id="tamano">
+    <option value="">Tamaño</option>
+    <option value="Pequeño">Pequeño</option>
+    <option value="Mediano">Mediano</option>
+    <option value="Grande">Grande</option>
+  </select>
+  <select id="color">
+    <option value="">Color</option>
+    <option value="Negro">Negro</option>
+    <option value="Plateado">Plateado</option>
+    <option value="Rojo">Rojo</option>
+    <option value="Azul">Azul</option>
+  </select>
+  <select id="material">
+    <option value="">Material</option>
+    <option value="Acero">Acero</option>
+    <option value="Plástico">Plástico</option>
+    <option value="Madera">Madera</option>
+  </select>
+
+  <button onclick="enviarWhatsApp()">Generar y Enviar</button>
+
+  <script>
+    function enviarWhatsApp() {
+      const foto = document.getElementById('foto').value;
+      const nombre = document.getElementById('nombre').value;
+      const descripcion = document.getElementById('descripcion').value;
+      const precio = document.getElementById('precio').value;
+      const tamano = document.getElementById('tamano').value;
+      const color = document.getElementById('color').value;
+      const material = document.getElementById('material').value;
+
+      const codigo = `
+<div class="producto">
+  <img src="${foto}">
+  <div class="producto-info">
+    <h3>${nombre}</h3>
+    <p>${descripcion}</p>
+    <p class="price">Precio: ${precio}</p>
+    <div class="opciones">
+      ${tamano ? `<span>Tamaño: ${tamano}</span>` : ""}
+      ${color ? `<span>Color: ${color}</span>` : ""}
+      ${material ? `<span>Material: ${material}</span>` : ""}
+    </div>
+  </div>
+</div>`;
+
+      const mensaje = encodeURIComponent(codigo);
+      const numero = "56954998792";
+      const url = `https://wa.me/${numero}?text=${mensaje}`;
+      window.open(url, "_blank");
+    }
+  </script>
+</body>
+</html>
