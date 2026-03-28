@@ -457,6 +457,7 @@
       max-width: 1300px; 
       margin: 0 auto; 
       padding: 40px 20px;
+      padding-top: 180px;
       position: relative;
       z-index: 2;
     }
@@ -1065,6 +1066,9 @@
       .form-grid { grid-template-columns: 1fr; }
       .full-width { grid-column: span 1; }
       .cart-item { grid-template-columns: 80px 1fr 100px; }
+      .container { padding-top: 140px; }
+      .grid { gap: 20px; }
+      .card-img { height: 200px; }
     }
 
     /* Scrollbar personalizada */
@@ -1162,7 +1166,6 @@
       <circle cx="50" cy="25" r="4" fill="#064e3b"/>
       <circle cx="70" cy="25" r="4" fill="#064e3b"/>
       <path d="M55 35 Q60 42 65 35" stroke="#064e3b" fill="none" stroke-width="3" stroke-linecap="round"/>
-      <!-- Ojos felices -->
       <path d="M45 20 Q50 15 55 20" stroke="#064e3b" fill="none" stroke-width="2"/>
       <path d="M65 20 Q70 15 75 20" stroke="#064e3b" fill="none" stroke-width="2"/>
     </svg>
@@ -1174,7 +1177,7 @@
   <!-- 🥬 HEADER PRINCIPAL -->
   <header class="header-fixed">
     <div class="nav-top">
-      <a href="#" class="logo">NORMITA<span>DELIVERY FRESCO</span></a>
+      <a href="#" class="logo">NORMITA</a>
       <div class="nav-icons">
         <button class="icon-btn" onclick="abrirModal('modalClave')" title="Admin">
           <i class="fas fa-tools"></i>
@@ -1201,7 +1204,20 @@
     </div>
   </header>
 <br>
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+  <!-- 📸 GALERÍA DESTACADA -->
+  <div class="gallery-wrap" id="galeriaWrap">
+    <div class="gallery" id="galeriaSuperior"></div>
+  </div>
+
   <!-- 📦 CONTENIDO PRINCIPAL -->
   <div class="container">
     <div id="errorBanner" class="error-banner">
@@ -1251,7 +1267,7 @@
     </div>
   </div>
 
-  <!-- 🔧 MODAL PRODUCTO (ADMIN) - CORREGIDO -->
+  <!-- 🔧 MODAL PRODUCTO (ADMIN) -->
   <div class="modal" id="modalProd">
     <div class="modal-content" style="max-width: 700px;">
       <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; padding: 25px; text-align: center; border-radius: 25px 25px 0 0;">
@@ -1261,8 +1277,10 @@
         <input type="hidden" id="pId">
         <div class="form-grid">
           <div class="full-width">
-            <label>Nombre del Producto</label>
-            <input type="text" id="pNom" placeholder="Ej: Manzana Roja Fresca">
+                    <button class="btn-add" style="background: linear-gradient(135deg, #ef5350 0%, #e53935 100%); margin-top:12px" onclick="activarModoEliminar()">
+          🗑️ ELIMINAR O EDITAR PRODUCTO✏️
+        </button><label>Nombre del Producto *</label>
+            <input type="text" id="pNom" placeholder="Ej: Manzana Roja Fresca" required>
           </div>
           <div>
             <label>Categoría</label>
@@ -1284,13 +1302,13 @@
           </div>
           <div>
             <label>Stock disponible</label>
-            <input type="number" id="pStock" placeholder="0">
+            <input type="number" id="pStock" placeholder="0" value="0">
           </div>
           <div class="full-width">
             <label>📷 Imagen del Producto</label>
             <input type="file" id="pImg" accept="image/*" style="padding: 12px; background: #f5f5f5;">
           </div>
-          <div class="full-width">
+          <div hidden class="full-width">
             <label>🖼️ Imagen destacada para galería</label>
             <input type="file" id="gImg" accept="image/*" style="padding: 12px; background: #f5f5f5;">
           </div>
@@ -1300,19 +1318,15 @@
           </div>
         </div>
         
-        <!-- BOTONES CORREGIDOS - AHORA INCLUYE AGREGAR A GALERÍA -->
         <button class="btn-add" style="margin-top:25px; font-size: 1.1rem;" onclick="guardar()">
           💾 GUARDAR PRODUCTO
         </button>
         
-        <!-- ESTE BOTÓN FALTABA - AHORA AGREGADO -->
-        <button class="btn-add" style="background: linear-gradient(135deg, #ffb74d 0%, #ff9800 100%); color: white; margin-top:12px" onclick="guardarImagenGaleria()">
+        <button class="btn-add" style="background: linear-gradient(135deg, #ffb74d 0%, #ff9800 100%); color: white; margin-top:12px; display: none;" onclick="guardarImagenGaleria()">
           🖼️ AGREGAR A GALERÍA
         </button>
         
-        <button class="btn-add" style="background: linear-gradient(135deg, #ef5350 0%, #e53935 100%); margin-top:12px" onclick="activarModoEliminar()">
-          🗑️ MODO ELIMINAR
-        </button>
+
         <button class="btn-add" style="background: #e0e0e0; color: #616161; margin-top:12px" onclick="cerrarModal('modalProd')">
           CANCELAR
         </button>
@@ -1373,6 +1387,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCuHSlv7WEmoEWh96rWWCnTi7AwgN-7Hd4",
@@ -1384,53 +1399,151 @@
       appId: "1:667800230522:web:1c7f3a49fc5323ba61f9c3"
     };
 
+    // ============================================
+    // VARIABLES GLOBALES
+    // ============================================
     let app, db, dbRef, galeriaRef;
-    let productos = JSON.parse(localStorage.getItem('productos_backup') || '[]');
-    let galeria = JSON.parse(localStorage.getItem('galeria_backup') || '[]');
-    let carrito = JSON.parse(localStorage.getItem('ferre_v2_cart') || '[]');
+    let productos = [];
+    let galeria = [];
+    let carrito = [];
     let isAdmin = false;
     let modoEliminar = false;
     let accionPendiente = null;
     let filtroTexto = '';
     let filtroCategoria = 'all';
     let firebaseOk = false;
+    let datosCargados = false;
+    let pendientes = [];
 
+    // ============================================
+    // INICIALIZACIÓN DESDE LOCALSTORAGE
+    // ============================================
+    try {
+      const backupProductos = localStorage.getItem('productos_backup');
+      if (backupProductos) {
+        productos = JSON.parse(backupProductos);
+        console.log('📂 Productos cargados desde localStorage:', productos.length);
+      }
+      
+      const backupGaleria = localStorage.getItem('galeria_backup');
+      if (backupGaleria) {
+        galeria = JSON.parse(backupGaleria);
+      }
+      
+      const backupCarrito = localStorage.getItem('ferre_v2_cart');
+      if (backupCarrito) {
+        carrito = JSON.parse(backupCarrito);
+      }
+      
+      const backupPendientes = localStorage.getItem('productos_pendientes');
+      if (backupPendientes) {
+        pendientes = JSON.parse(backupPendientes);
+      }
+    } catch (e) {
+      console.error('❌ Error cargando localStorage:', e);
+    }
+
+    // ============================================
+    // FUNCIONES DE MODAL
+    // ============================================
     window.abrirModal = (id) => {
-      document.getElementById(id).style.display = 'flex';
-      document.body.style.overflow = 'hidden';
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
     };
     
     window.cerrarModal = (id) => {
-      document.getElementById(id).style.display = 'none';
-      document.body.style.overflow = 'auto';
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
     };
 
+    // ============================================
+    // INICIALIZACIÓN DE FIREBASE
+    // ============================================
     try {
-      console.log('🔌 Intentando conectar a Firebase...');
+      console.log('🔌 Inicializando Firebase...');
       app = initializeApp(firebaseConfig);
       db = getDatabase(app);
       dbRef = ref(db, 'productos');
       galeriaRef = ref(db, 'galeria_ferre');
       
+      // Autenticación anónima
+      signInAnonymously(getAuth(app))
+        .then(() => console.log('✅ Auth anónima exitosa'))
+        .catch(err => console.warn('⚠️ Auth anónima falló:', err));
+
+      // LISTENER DE PRODUCTOS - CRÍTICO
       onValue(dbRef, (snap) => {
-        console.log('✅ Datos recibidos de Firebase');
-        productos = [];
-        snap.forEach(c => productos.push({ id: c.key, ...c.val() }));
-        localStorage.setItem('productos_backup', JSON.stringify(productos));
+        console.log('📥 Firebase onValue recibido. Existe:', snap.exists(), 'Keys:', snap.size);
+        
+        // Si Firebase está vacío pero ya teníamos datos locales, NO sobrescribir
+        if (!snap.exists() && datosCargados && productos.length > 0) {
+          console.log('⚠️ Firebase vacío, manteniendo datos locales');
+          return;
+        }
+        
+        // Si hay datos en Firebase, usarlos
+        if (snap.exists()) {
+          const nuevosProductos = [];
+          snap.forEach((childSnap) => {
+            const val = childSnap.val();
+            if (val && val.nombre) {
+              nuevosProductos.push({ 
+                id: childSnap.key, 
+                ...val 
+              });
+            }
+          });
+          
+          // Solo actualizar si hay datos válidos
+          if (nuevosProductos.length > 0) {
+            productos = nuevosProductos;
+            console.log('✅ Productos actualizados desde Firebase:', productos.length);
+            
+            // GUARDAR INMEDIATAMENTE EN LOCALSTORAGE
+            localStorage.setItem('productos_backup', JSON.stringify(productos));
+          }
+        }
+        
+        datosCargados = true;
+        firebaseOk = true;
+        
+        // Renderizar siempre
         render();
         actualizarCarritoUI();
         ocultarLoader();
-        firebaseOk = true;
+        
+        // Procesar pendientes si hay conexión
+        if (pendientes.length > 0 && firebaseOk) {
+          console.log('🔄 Procesando', pendientes.length, 'pendientes...');
+          setTimeout(procesarPendientes, 1000);
+        }
       }, (error) => {
-        console.error('❌ Error Firebase:', error);
+        console.error('❌ Error Firebase onValue:', error);
         mostrarError();
         usarDatosLocales();
       });
 
+      // LISTENER DE GALERÍA
       onValue(galeriaRef, (snap) => {
-        galeria = [];
-        snap.forEach(c => galeria.push({ id: c.key, ...c.val() }));
-        localStorage.setItem('galeria_backup', JSON.stringify(galeria));
+        const nuevaGaleria = [];
+        snap.forEach((childSnap) => {
+          const val = childSnap.val();
+          if (val && val.url) {
+            nuevaGaleria.push({ id: childSnap.key, ...val });
+          }
+        });
+        
+        if (nuevaGaleria.length > 0) {
+          galeria = nuevaGaleria;
+          localStorage.setItem('galeria_backup', JSON.stringify(galeria));
+        }
+        
         renderGaleria();
       });
 
@@ -1440,40 +1553,95 @@
       usarDatosLocales();
     }
 
+    // Timeout de seguridad
     setTimeout(() => {
-      if (document.getElementById('loader').style.display !== 'none') {
+      const loader = document.getElementById('loader');
+      if (loader && loader.style.display !== 'none' && !datosCargados) {
         console.log('⏱️ Timeout - usando datos locales');
         usarDatosLocales();
       }
-    }, 8000);
+    }, 5000);
 
+    // ============================================
+    // FUNCIONES AUXILIARES
+    // ============================================
     function ocultarLoader() {
       const loader = document.getElementById('loader');
-      loader.style.opacity = '0';
-      setTimeout(() => loader.style.display = 'none', 500);
+      if (loader) {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          if (loader) loader.style.display = 'none';
+        }, 500);
+      }
     }
 
     function mostrarError() {
-      document.getElementById('errorBanner').style.display = 'block';
+      const errorBanner = document.getElementById('errorBanner');
+      if (errorBanner) errorBanner.style.display = 'block';
     }
 
     function usarDatosLocales() {
+      console.log('📂 Usando datos locales:', productos.length, 'productos');
+      datosCargados = true;
       render();
       renderGaleria();
       actualizarCarritoUI();
       ocultarLoader();
     }
 
+    async function procesarPendientes() {
+      if (!firebaseOk || pendientes.length === 0) return;
+      
+      const exitosos = [];
+      const fallidos = [];
+      
+      for (const data of pendientes) {
+        try {
+          const nuevoRef = await push(dbRef, data);
+          const newId = nuevoRef.key;
+          productos.push({ id: newId, ...data });
+          exitosos.push(data);
+          console.log('✅ Pendiente sincronizado:', newId);
+        } catch (err) {
+          fallidos.push(data);
+          console.error('❌ Error sincronizando pendiente:', err);
+        }
+      }
+      
+      pendientes = fallidos;
+      localStorage.setItem('productos_pendientes', JSON.stringify(pendientes));
+      localStorage.setItem('productos_backup', JSON.stringify(productos));
+      
+      if (exitosos.length > 0) {
+        render();
+        console.log(`✅ ${exitosos.length} productos sincronizados`);
+      }
+    }
+
+    function mostrarEmojiFlotante(emoji, x, y) {
+      const el = document.createElement('div');
+      el.className = 'floating-emoji';
+      el.textContent = emoji;
+      el.style.left = (x || window.innerWidth/2) + 'px';
+      el.style.top = (y || window.innerHeight/2) + 'px';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    }
+
+    // ============================================
+    // FUNCIONES DE ADMIN
+    // ============================================
     window.login = () => {
-      if (document.getElementById('passInput').value === '1234') {
+      const passInput = document.getElementById('passInput');
+      if (passInput && passInput.value === '1234') {
         isAdmin = true;
         cerrarModal('modalClave');
         abrirModal('modalProd');
         render();
-        mostrarEmojiFlotante('🔓', window.innerWidth/2, window.innerHeight/2);
+        mostrarEmojiFlotante('🔓');
       } else {
-        mostrarEmojiFlotante('❌', window.innerWidth/2, window.innerHeight/2);
-        alert('Clave incorrecta');
+        mostrarEmojiFlotante('❌');
+        alert('❌ Clave incorrecta');
       }
     };
 
@@ -1482,81 +1650,119 @@
       cerrarModal('modalProd');
       render();
       renderGaleria();
-      mostrarEmojiFlotante(modoEliminar ? '🗑️' : '✅', window.innerWidth/2, window.innerHeight/2);
-      alert(modoEliminar ? 'Modo eliminar activado' : 'Modo eliminar desactivado');
+      mostrarEmojiFlotante(modoEliminar ? '🗑️' : '✅');
+      alert(modoEliminar ? '🗑️ Modo eliminar ACTIVADO' : '✅ Modo eliminar DESACTIVADO');
     };
 
-    function mostrarEmojiFlotante(emoji, x, y) {
-      const el = document.createElement('div');
-      el.className = 'floating-emoji';
-      el.textContent = emoji;
-      el.style.left = x + 'px';
-      el.style.top = y + 'px';
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 3000);
-    }
-
+    // ============================================
+    // GUARDAR PRODUCTO - CORREGIDO
+    // ============================================
     window.guardar = async () => {
-      const id = document.getElementById('pId').value;
-      const file = document.getElementById('pImg').files[0];
+      const idInput = document.getElementById('pId');
+      const nomInput = document.getElementById('pNom');
+      const catInput = document.getElementById('pCat');
+      const preKgInput = document.getElementById('pPreKg');
+      const preUniInput = document.getElementById('pPreUni');
+      const stockInput = document.getElementById('pStock');
+      const descInput = document.getElementById('pDesc');
+      const imgInput = document.getElementById('pImg');
+      
+      // Validaciones
+      if (!nomInput || !nomInput.value.trim()) {
+        alert('⚠️ El nombre del producto es obligatorio');
+        return;
+      }
+      
+      const id = idInput ? idInput.value : '';
+      const file = imgInput ? imgInput.files[0] : null;
       
       const data = {
-        nombre: document.getElementById('pNom').value.trim() || 'Sin nombre',
-        categoria: document.getElementById('pCat').value,
-        precioKilo: parseFloat(document.getElementById('pPreKg').value) || null,
-        precioUnidad: parseFloat(document.getElementById('pPreUni').value) || null,
-        stock: parseInt(document.getElementById('pStock').value) || 0,
-        desc: document.getElementById('pDesc').value.trim(),
-        foto: 'https://via.placeholder.com/200'
+        nombre: nomInput.value.trim(),
+        categoria: catInput ? catInput.value : 'Frutas',
+        precioKilo: preKgInput && preKgInput.value ? parseFloat(preKgInput.value) : null,
+        precioUnidad: preUniInput && preUniInput.value ? parseFloat(preUniInput.value) : null,
+        stock: stockInput && stockInput.value ? parseInt(stockInput.value) : 0,
+        desc: descInput ? descInput.value.trim() : '',
+        foto: 'https://via.placeholder.com/200',
+        updatedAt: Date.now()
       };
 
+      if (!id) {
+        data.createdAt = Date.now();
+      }
+
       const guardarConFoto = async (fotoBase64) => {
-        if (fotoBase64) data.foto = fotoBase64;
-        else if (id) {
+        if (fotoBase64) {
+          data.foto = fotoBase64;
+        } else if (id) {
           const existente = productos.find(p => p.id === id);
-          if (existente) data.foto = existente.foto;
+          if (existente && existente.foto) {
+            data.foto = existente.foto;
+          }
         }
 
         try {
-          if (firebaseOk) {
-            if (id) {
-              await set(ref(db, 'productos/' + id), data);
-              mostrarEmojiFlotante('✏️', window.innerWidth/2, window.innerHeight/2);
-              const idx = productos.findIndex(p => p.id === id);
-              if (idx >= 0) productos[idx] = { id, ...data };
-              else productos.push({ id, ...data });
-            } else {
-              const nuevoRef = await push(dbRef, data);
-              const newId = nuevoRef.key;
-              productos.push({ id: newId, ...data });
-              mostrarEmojiFlotante('✨', window.innerWidth/2, window.innerHeight/2);
+          let newId;
+          
+          if (id) {
+            // ACTUALIZAR EXISTENTE
+            await set(ref(db, 'productos/' + id), data);
+            newId = id;
+            
+            const idx = productos.findIndex(p => p.id === id);
+            if (idx >= 0) {
+              productos[idx] = { id, ...data };
             }
-            localStorage.setItem('productos_backup', JSON.stringify(productos));
-            render();
-            cerrarModal('modalProd');
-            limpiarFormulario();
+            
+            mostrarEmojiFlotante('✏️');
+            console.log('✅ Producto actualizado:', id);
           } else {
-            if (id) {
-              const idx = productos.findIndex(p => p.id === id);
-              if (idx >= 0) productos[idx] = { id, ...data };
-            } else {
-              const localId = 'local-' + Date.now();
-              productos.push({ id: localId, ...data });
-              mostrarEmojiFlotante('✨', window.innerWidth/2, window.innerHeight/2);
-            }
-            localStorage.setItem('productos_backup', JSON.stringify(productos));
-            render();
-            cerrarModal('modalProd');
-            limpiarFormulario();
+            // NUEVO PRODUCTO
+            console.log('⬆️ Subiendo a Firebase...');
+            const nuevoRef = await push(dbRef, data);
+            newId = nuevoRef.key;
+            
+            // AGREGAR INMEDIATAMENTE AL ARRAY LOCAL
+            productos.push({ id: newId, ...data });
+            
+            mostrarEmojiFlotante('✨');
+            console.log('✅ Nuevo producto creado:', newId);
           }
+          
+          // GUARDAR EN LOCALSTORAGE INMEDIATAMENTE
+          localStorage.setItem('productos_backup', JSON.stringify(productos));
+          
+          // Renderizar y limpiar
+          render();
+          cerrarModal('modalProd');
+          limpiarFormulario();
+          
+          console.log('📊 Total productos:', productos.length);
+          
         } catch (e) {
-          alert('Error: ' + e.message);
+          console.error('❌ Error Firebase:', e);
+          
+          // MODO OFFLINE: Guardar como pendiente y mostrar localmente
+          pendientes.push(data);
+          localStorage.setItem('productos_pendientes', JSON.stringify(pendientes));
+          
+          // Agregar con ID temporal para visualización inmediata
+          const tempId = 'local-' + Date.now();
+          productos.push({ id: tempId, ...data });
+          localStorage.setItem('productos_backup', JSON.stringify(productos));
+          
+          render();
+          cerrarModal('modalProd');
+          limpiarFormulario();
+          
+          alert('⚠️ Guardado localmente. Se sincronizará automáticamente cuando haya conexión.');
         }
       };
 
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => guardarConFoto(e.target.result);
+        reader.onerror = () => guardarConFoto();
         reader.readAsDataURL(file);
       } else {
         guardarConFoto();
@@ -1564,15 +1770,17 @@
     };
 
     function limpiarFormulario() {
-      document.getElementById('pId').value = '';
-      ['pNom', 'pPreKg', 'pPreUni', 'pStock', 'pDesc', 'pImg'].forEach(id => {
-        document.getElementById(id).value = '';
+      const ids = ['pId', 'pNom', 'pPreKg', 'pPreUni', 'pStock', 'pDesc', 'pImg', 'gImg'];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
       });
     }
 
-    // FUNCIÓN CORREGIDA - AHORA ESTÁ CONECTADA AL BOTÓN
     window.guardarImagenGaleria = async () => {
-      const file = document.getElementById('gImg').files[0];
+      const gImg = document.getElementById('gImg');
+      const file = gImg ? gImg.files[0] : null;
+      
       if (!file) {
         alert('⚠️ Selecciona una imagen primero');
         return;
@@ -1581,10 +1789,10 @@
       const reader = new FileReader();
       reader.onload = async (e) => {
         try {
-          await push(galeriaRef, { url: e.target.result });
-          document.getElementById('gImg').value = '';
-          mostrarEmojiFlotante('🖼️', window.innerWidth/2, window.innerHeight/2);
-          alert('✅ Imagen agregada a la galería exitosamente');
+          await push(galeriaRef, { url: e.target.result, createdAt: Date.now() });
+          if (gImg) gImg.value = '';
+          mostrarEmojiFlotante('🖼️');
+          alert('✅ Imagen agregada a la galería');
         } catch (err) {
           alert('❌ Error: ' + err.message);
         }
@@ -1594,15 +1802,23 @@
 
     window.editar = (id) => {
       const p = productos.find(x => x.id === id);
-      if (!p) return;
+      if (!p) {
+        alert('❌ Producto no encontrado');
+        return;
+      }
       
-      document.getElementById('pId').value = id;
-      document.getElementById('pNom').value = p.nombre || '';
-      document.getElementById('pCat').value = p.categoria || 'Frutas';
-      document.getElementById('pPreKg').value = p.precioKilo || '';
-      document.getElementById('pPreUni').value = p.precioUnidad || '';
-      document.getElementById('pStock').value = p.stock || '';
-      document.getElementById('pDesc').value = p.desc || '';
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val || '';
+      };
+      
+      setVal('pId', id);
+      setVal('pNom', p.nombre);
+      setVal('pCat', p.categoria || 'Frutas');
+      setVal('pPreKg', p.precioKilo);
+      setVal('pPreUni', p.precioUnidad);
+      setVal('pStock', p.stock);
+      setVal('pDesc', p.desc);
       
       abrirModal('modalProd');
     };
@@ -1610,14 +1826,29 @@
     window.borrarDB = (id) => {
       accionPendiente = async () => {
         try {
-          await remove(ref(db, 'productos/' + id));
-          mostrarEmojiFlotante('🗑️', window.innerWidth/2, window.innerHeight/2);
+          // Eliminar de Firebase si es posible
+          if (!id.startsWith('local-')) {
+            await remove(ref(db, 'productos/' + id));
+          }
+          
+          // Eliminar del array local
+          productos = productos.filter(p => p.id !== id);
+          
+          // Actualizar localStorage
+          localStorage.setItem('productos_backup', JSON.stringify(productos));
+          
+          mostrarEmojiFlotante('🗑️');
+          render();
+          console.log('✅ Producto eliminado:', id);
         } catch (e) {
-          console.error('Error eliminando:', e);
+          console.error('❌ Error eliminando:', e);
+          alert('❌ Error al eliminar: ' + e.message);
         }
         modoEliminar = false;
       };
-      document.getElementById('confirmMessage').innerText = '¿Eliminar este producto?';
+      
+      const confirmMsg = document.getElementById('confirmMessage');
+      if (confirmMsg) confirmMsg.innerText = '¿Eliminar este producto permanentemente?';
       abrirModal('modalConfirm');
     };
 
@@ -1625,12 +1856,17 @@
       accionPendiente = async () => {
         try {
           await remove(ref(db, 'galeria_ferre/' + id));
-          mostrarEmojiFlotante('🗑️', window.innerWidth/2, window.innerHeight/2);
+          galeria = galeria.filter(g => g.id !== id);
+          localStorage.setItem('galeria_backup', JSON.stringify(galeria));
+          renderGaleria();
+          mostrarEmojiFlotante('🗑️');
         } catch (e) {
-          console.error('Error eliminando imagen:', e);
+          console.error('❌ Error eliminando imagen:', e);
         }
       };
-      document.getElementById('confirmMessage').innerText = '¿Eliminar imagen?';
+      
+      const confirmMsg = document.getElementById('confirmMessage');
+      if (confirmMsg) confirmMsg.innerText = '¿Eliminar esta imagen?';
       abrirModal('modalConfirm');
     };
 
@@ -1640,12 +1876,19 @@
       cerrarModal('modalConfirm');
     };
 
+    // ============================================
+    // CARRITO Y VARIANTES
+    // ============================================
     window.abrirVariantes = (id) => {
       const p = productos.find(x => x.id === id);
       if (!p) return;
       
-      document.getElementById('varProdId').value = id;
-      document.getElementById('varTitle').innerText = '🛒 ' + (p.nombre || 'Seleccionar');
+      const varProdId = document.getElementById('varProdId');
+      const varTitle = document.getElementById('varTitle');
+      const varOptions = document.getElementById('varOptions');
+      
+      if (varProdId) varProdId.value = id;
+      if (varTitle) varTitle.innerText = '🛒 ' + (p.nombre || 'Seleccionar');
       
       const tieneKilo = p.precioKilo > 0;
       const tieneUnidad = p.precioUnidad > 0;
@@ -1667,35 +1910,46 @@
         <input id="varCantidad" type="number" min="${step}" step="${step}" value="1" style="width:150px; padding:12px; border:3px solid var(--accent-yellow); border-radius:12px; font-size:1.2rem; font-weight:700; text-align:center;">
       </div>`;
       
-      document.getElementById('varOptions').innerHTML = html;
+      if (varOptions) varOptions.innerHTML = html;
       abrirModal('modalVariantes');
     };
 
     window.selectModo = (modo) => {
       document.querySelectorAll('#modoGroup .option-btn').forEach(b => b.classList.remove('active'));
-      document.querySelector(`[data-modo="${modo}"]`).classList.add('active');
+      const btn = document.querySelector(`[data-modo="${modo}"]`);
+      if (btn) btn.classList.add('active');
+      
       const input = document.getElementById('varCantidad');
+      if (!input) return;
+      
       if (modo === 'kilo') {
-        input.step = '0.1'; input.min = '0.1';
+        input.step = '0.1'; 
+        input.min = '0.1';
         if (parseFloat(input.value) < 0.1) input.value = '0.1';
       } else {
-        input.step = '1'; input.min = '1';
-        input.value = Math.max(1, Math.round(parseFloat(input.value)));
+        input.step = '1'; 
+        input.min = '1';
+        input.value = Math.max(1, Math.round(parseFloat(input.value) || 1));
       }
     };
 
     window.confirmarVariantes = () => {
-      const id = document.getElementById('varProdId').value;
+      const varProdId = document.getElementById('varProdId');
+      const varCantidad = document.getElementById('varCantidad');
+      
+      if (!varProdId || !varCantidad) return;
+      
+      const id = varProdId.value;
       const p = productos.find(x => x.id === id);
       if (!p) return;
       
-      const cantidad = parseFloat(document.getElementById('varCantidad').value) || 1;
+      const cantidad = parseFloat(varCantidad.value) || 1;
       const modoBtn = document.querySelector('#modoGroup .option-btn.active');
       const modo = modoBtn ? modoBtn.dataset.modo : (p.precioKilo > 0 ? 'kilo' : 'unidad');
       
       const enCarrito = carrito.filter(item => item.id === id).reduce((sum, item) => sum + item.cantidad, 0);
       if (enCarrito + cantidad > p.stock) {
-        alert(`Stock insuficiente. Disponible: ${Math.max(0, p.stock - enCarrito)}`);
+        alert(`⚠️ Stock insuficiente. Disponible: ${Math.max(0, p.stock - enCarrito)}`);
         return;
       }
       
@@ -1706,11 +1960,14 @@
         carrito.push({ id, cantidad, modo });
       }
       
+      // Guardar carrito
+      localStorage.setItem('ferre_v2_cart', JSON.stringify(carrito));
+      
       cerrarModal('modalVariantes');
       actualizarCarritoUI();
       lanzarEfectos();
       
-      // Efecto de emojis flotantes aleatorios
+      // Emojis de celebración
       const emojis = ['🥬', '🥕', '🍅', '🥦', '🌽', '🥒', '🍎', '🍊'];
       for(let i = 0; i < 5; i++) {
         setTimeout(() => {
@@ -1724,8 +1981,12 @@
     };
 
     window.cambiarCantidad = (index, delta) => {
+      if (!carrito[index]) return;
+      
       const item = carrito[index];
       const p = productos.find(x => x.id === item.id);
+      if (!p) return;
+      
       const step = item.modo === 'kilo' ? 0.1 : 1;
       
       let nueva = item.cantidad + (delta > 0 ? step : -step);
@@ -1734,9 +1995,12 @@
       
       if (nueva < step) nueva = step;
       
-      const otros = carrito.filter((_, i) => i !== index && carrito[i].id === item.id).reduce((s, i) => s + i.cantidad, 0);
+      const otros = carrito.filter((_, i) => i !== index && carrito[i].id === item.id)
+        .reduce((s, i) => s + i.cantidad, 0);
+        
       if (otros + nueva > p.stock) {
-        alert('Sin stock suficiente'); return;
+        alert('⚠️ Sin stock suficiente'); 
+        return;
       }
       
       item.cantidad = nueva;
@@ -1745,17 +2009,30 @@
 
     window.borrarDelCarrito = (index) => {
       carrito.splice(index, 1);
+      localStorage.setItem('ferre_v2_cart', JSON.stringify(carrito));
       actualizarCarritoUI();
-      mostrarEmojiFlotante('🗑️', window.innerWidth/2, window.innerHeight/2);
+      mostrarEmojiFlotante('🗑️');
     };
 
     window.enviarWhatsApp = () => {
-      const metodo = document.getElementById('payMethod').value;
-      const nombre = document.getElementById('customerName').value.trim();
+      const payMethod = document.getElementById('payMethod');
+      const customerName = document.getElementById('customerName');
       
-      if (!metodo || !nombre) return alert('Completa todos los campos');
+      if (!payMethod || !customerName) return;
       
-      const metodoTxt = { transferencia: 'Transferencia', tarjeta: 'Tarjeta', efectivo: 'Efectivo' }[metodo];
+      const metodo = payMethod.value;
+      const nombre = customerName.value.trim();
+      
+      if (!metodo || !nombre) {
+        alert('⚠️ Completa todos los campos');
+        return;
+      }
+      
+      const metodoTxt = { 
+        transferencia: 'Transferencia', 
+        tarjeta: 'Tarjeta', 
+        efectivo: 'Efectivo' 
+      }[metodo];
       
       let msg = `🥬 *PEDIDO NORMITA* 🥬\n👤 ${nombre}\n💳 ${metodoTxt}\n\n`;
       let total = 0;
@@ -1763,26 +2040,32 @@
       carrito.forEach(item => {
         const p = productos.find(x => x.id === item.id);
         if (!p) return;
+        
         const precio = item.modo === 'kilo' ? p.precioKilo : p.precioUnidad;
         const sub = precio * item.cantidad;
         total += sub;
         msg += `📦 ${p.nombre}\n   ${item.cantidad}${item.modo === 'kilo' ? 'kg' : 'u'} x $${precio} = $${sub.toFixed(2)}\n`;
         
-        if (firebaseOk && p.id) {
-          set(ref(db, `productos/${p.id}/stock`), Math.max(0, p.stock - Math.ceil(item.cantidad)));
+        // Actualizar stock en Firebase si es posible
+        if (firebaseOk && p.id && !p.id.startsWith('local-')) {
+          const nuevoStock = Math.max(0, p.stock - Math.ceil(item.cantidad));
+          set(ref(db, `productos/${p.id}/stock`), nuevoStock).catch(console.error);
+          p.stock = nuevoStock;
         }
-        p.stock = Math.max(0, p.stock - Math.ceil(item.cantidad));
       });
       
       msg += `\n💰 *TOTAL: $${total.toFixed(2)}*`;
       
+      // Guardar cambios de stock
       localStorage.setItem('productos_backup', JSON.stringify(productos));
+      
+      // Limpiar carrito
       carrito = [];
       localStorage.removeItem('ferre_v2_cart');
       actualizarCarritoUI();
       cerrarModal('modalCarrito');
       
-      // Celebración final
+      // Celebración
       for(let i = 0; i < 10; i++) {
         setTimeout(() => {
           mostrarEmojiFlotante('🎉', window.innerWidth/2 + (Math.random()-0.5)*300, window.innerHeight/2);
@@ -1793,23 +2076,33 @@
     };
 
     function lanzarEfectos() {
-      document.getElementById('happy-cart').classList.add('active');
-      const badge = document.getElementById('cartCount');
-      badge.classList.remove('badge-anim');
-      void badge.offsetWidth;
-      badge.classList.add('badge-anim');
-      setTimeout(() => document.getElementById('happy-cart').classList.remove('active'), 2000);
+      const happyCart = document.getElementById('happy-cart');
+      const cartCount = document.getElementById('cartCount');
+      
+      if (happyCart) happyCart.classList.add('active');
+      
+      if (cartCount) {
+        cartCount.classList.remove('badge-anim');
+        void cartCount.offsetWidth;
+        cartCount.classList.add('badge-anim');
+      }
+      
+      setTimeout(() => {
+        if (happyCart) happyCart.classList.remove('active');
+      }, 2000);
     }
 
+    // ============================================
+    // RENDERIZADO
+    // ============================================
     function actualizarCarritoUI() {
-      localStorage.setItem('ferre_v2_cart', JSON.stringify(carrito));
-      
       const list = document.getElementById('cartList');
       const count = document.getElementById('cartCount');
       const total = document.getElementById('cartTotal');
       const btn = document.getElementById('whatsappBtn');
       
-      list.innerHTML = '';
+      if (list) list.innerHTML = '';
+      
       let sum = 0, itemsCount = 0;
       
       carrito.forEach((item, i) => {
@@ -1822,51 +2115,71 @@
         itemsCount += item.cantidad;
         const step = item.modo === 'kilo' ? 0.1 : 1;
         
-        list.innerHTML += `
-          <div class="cart-item" style="animation: slideIn 0.3s ease-out ${i * 0.1}s both;">
-            <img src="${p.foto}" class="cart-img-min" onerror="this.src='https://via.placeholder.com/200'">
-            <div>
-              <div style="font-weight:800; font-size:1rem; color: var(--primary);">${p.nombre}</div>
-              ${p.desc ? `<div style="font-size:0.85rem; color:#666; margin-top:4px;">${p.desc}</div>` : ''}
-              <div style="font-size:0.9rem; color:var(--accent); font-weight:700; margin-top:4px;">$${precio} ${item.modo === 'kilo' ? '/kg' : '/u'}</div>
-              <button class="btn-delete-item" onclick="borrarDelCarrito(${i})">🗑️ Eliminar</button>
-            </div>
-            <div style="text-align:right">
-              <div class="qty-controls">
-                <button class="btn-qty" onclick="cambiarCantidad(${i}, -${step})">−</button>
-                <input class="qty-input" readonly value="${item.cantidad}">
-                <button class="btn-qty" onclick="cambiarCantidad(${i}, ${step})">+</button>
+        if (list) {
+          list.innerHTML += `
+            <div class="cart-item" style="animation: slideIn 0.3s ease-out ${i * 0.1}s both;">
+              <img src="${p.foto || 'https://via.placeholder.com/200'}" class="cart-img-min" onerror="this.src='https://via.placeholder.com/200'">
+              <div>
+                <div style="font-weight:800; font-size:1rem; color: var(--primary);">${p.nombre || 'Producto'}</div>
+                ${p.desc ? `<div style="font-size:0.85rem; color:#666; margin-top:4px;">${p.desc}</div>` : ''}
+                <div style="font-size:0.9rem; color:var(--accent); font-weight:700; margin-top:4px;">$${precio} ${item.modo === 'kilo' ? '/kg' : '/u'}</div>
+                <button class="btn-delete-item" onclick="borrarDelCarrito(${i})">🗑️ Eliminar</button>
               </div>
-              <div style="font-weight:900; margin-top:8px; color: var(--primary); font-size: 1.1rem;">$${subtotal.toFixed(2)}</div>
+              <div style="text-align:right">
+                <div class="qty-controls">
+                  <button class="btn-qty" onclick="cambiarCantidad(${i}, -${step})">−</button>
+                  <input class="qty-input" readonly value="${item.cantidad}">
+                  <button class="btn-qty" onclick="cambiarCantidad(${i}, ${step})">+</button>
+                </div>
+                <div style="font-weight:900; margin-top:8px; color: var(--primary); font-size: 1.1rem;">$${subtotal.toFixed(2)}</div>
+              </div>
             </div>
-          </div>
-        `;
+          `;
+        }
       });
       
-      count.innerText = Math.ceil(itemsCount);
-      total.innerText = '$' + sum.toFixed(2);
-      btn.disabled = carrito.length === 0 || !document.getElementById('payMethod').value || !document.getElementById('customerName').value.trim();
+      if (count) count.innerText = Math.ceil(itemsCount);
+      if (total) total.innerText = '$' + sum.toFixed(2);
+      
+      if (btn) {
+        btn.disabled = carrito.length === 0 || !payMethod.value || !customerName.value.trim();
+      }
     }
-
-    document.getElementById('payMethod')?.addEventListener('change', actualizarCarritoUI);
-    document.getElementById('customerName')?.addEventListener('input', actualizarCarritoUI);
 
     function render() {
       const grid = document.getElementById('listaProductos');
+      if (!grid) {
+        console.error('❌ No se encontró listaProductos');
+        return;
+      }
+      
       grid.innerHTML = '';
+      
+      console.log('🎨 Renderizando', productos.length, 'productos');
       
       const filtrados = productos.filter(p => {
         const coincideTexto = !filtroTexto || 
-          (p.nombre?.toLowerCase().includes(filtroTexto)) ||
-          (p.desc?.toLowerCase().includes(filtroTexto));
+          (p.nombre && p.nombre.toLowerCase().includes(filtroTexto)) ||
+          (p.desc && p.desc.toLowerCase().includes(filtroTexto));
         const coincideCat = filtroCategoria === 'all' || p.categoria === filtroCategoria;
         return coincideTexto && coincideCat;
       });
       
+      if (filtrados.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: #666;">
+            <div style="font-size: 4rem; margin-bottom: 20px;">🥬</div>
+            <h3 style="font-family: Fredoka; color: var(--primary); margin-bottom: 10px;">No hay productos</h3>
+            <p>Agrega productos desde el panel de administrador (🔐 → clave: 1234)</p>
+          </div>
+        `;
+        return;
+      }
+      
       filtrados.forEach((p, index) => {
         const stockBajo = p.stock > 0 && p.stock <= 5;
-        const sinStock = p.stock <= 0;
-        let stockClass = sinStock ? 'stock-badge-out' : stockBajo ? 'stock-badge-low' : 'stock-badge-ok';
+        const sinStock = !p.stock || p.stock <= 0;
+        const stockClass = sinStock ? 'stock-badge-out' : stockBajo ? 'stock-badge-low' : 'stock-badge-ok';
         
         grid.innerHTML += `
           <div class="card" style="animation: cardAppear 0.5s ease-out ${index * 0.1}s both;">
@@ -1877,17 +2190,21 @@
             ${modoEliminar ? `<button class="card-delete-x" onclick="borrarDB('${p.id}')">×</button>` : ''}
             
             <div class="card-img">
-              <img src="${p.foto}" onerror="this.src='https://via.placeholder.com/200'" alt="${p.nombre}">
+              <img src="${p.foto || 'https://via.placeholder.com/200'}" 
+                   onerror="this.src='https://via.placeholder.com/200'" 
+                   alt="${p.nombre || 'Producto'}">
             </div>
             
             <div class="card-info">
-              <h3 style="margin:8px 0; font-size:1.3rem; color: var(--primary); font-weight: 800;">${p.nombre}</h3>
+              <h3 style="margin:8px 0; font-size:1.3rem; color: var(--primary); font-weight: 800;">
+                ${p.nombre || 'Sin nombre'}
+              </h3>
               ${p.desc ? `<div style="font-size:0.9rem; color:#666; margin-bottom:12px; line-height: 1.4;">${p.desc}</div>` : ''}
               
               <div class="stock-badge ${stockClass}">
                 <span class="stock-dot"></span>
                 ${sinStock ? 'SIN STOCK' : stockBajo ? '¡ÚLTIMAS UNIDADES!' : 'DISPONIBLE'}
-                ${!sinStock ? `(${p.stock})` : ''}
+                ${!sinStock ? `(${p.stock || 0})` : ''}
               </div>
               
               <div style="font-size:1.2rem; font-weight:900; margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap">
@@ -1907,6 +2224,8 @@
 
     function renderGaleria() {
       const cont = document.getElementById('galeriaSuperior');
+      if (!cont) return;
+      
       cont.innerHTML = galeria.map((g, i) => `
         <div class="gallery-item" style="animation: galleryAppear 0.5s ease-out ${i * 0.1}s both;">
           <img src="${g.url}" onerror="this.style.display='none'">
@@ -1915,19 +2234,24 @@
       `).join('');
     }
 
-    document.getElementById('searchInput')?.addEventListener('input', (e) => {
-      filtroTexto = e.target.value.toLowerCase();
-      render();
-    });
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        filtroTexto = e.target.value.toLowerCase();
+        render();
+      });
+    }
 
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        filtroCategoria = btn.dataset.cat;
+        filtroCategoria = btn.dataset.cat || 'all';
         render();
         
-        // Efecto de vibración divertida
         btn.style.animation = 'none';
         setTimeout(() => {
           btn.style.animation = 'logoWiggle 0.5s';
@@ -1935,9 +2259,28 @@
       });
     });
 
+    const payMethod = document.getElementById('payMethod');
+    const customerName = document.getElementById('customerName');
+    
+    if (payMethod) payMethod.addEventListener('change', actualizarCarritoUI);
+    if (customerName) customerName.addEventListener('input', actualizarCarritoUI);
+
+    // ============================================
+    // INICIALIZACIÓN FINAL
+    // ============================================
+    console.log('🚀 Inicializando aplicación...');
+    console.log('📦 Productos en memoria:', productos.length);
+    console.log('🛒 Items en carrito:', carrito.length);
+    
+    // Render inicial inmediato (con datos de localStorage)
     render();
     renderGaleria();
     actualizarCarritoUI();
-  </script>
+    
+    console.log('✅ Aplicación lista');
+ function formatearCLP(valor) {
+  if (!valor || valor === 0) return '$0';
+  return '$' + Math.round(valor).toLocaleString('es-CL');
+} </script>
 </body>
 </html>
