@@ -30,7 +30,6 @@
       padding-top: 140px;
     }
 
-    /* Header optimizado */
     .header-fixed { 
       position: fixed; 
       top: 0; 
@@ -93,7 +92,6 @@
       border: 2px solid white;
     }
 
-    /* Búsqueda y filtros */
     .top-bar { 
       display: flex; 
       flex-direction: column;
@@ -144,7 +142,6 @@
       color: var(--primary);
     }
 
-    /* Galería optimizada */
     .gallery-wrap { 
       background: var(--primary);
       padding: 20px 15px;
@@ -193,7 +190,6 @@
       justify-content: center;
     }
 
-    /* Grid de productos optimizado para 125+ items */
     .container { 
       max-width: 1200px; 
       margin: 0 auto; 
@@ -306,7 +302,6 @@
       cursor: not-allowed;
     }
 
-    /* Admin buttons */
     .admin-btns { 
       position: absolute; 
       top: 8px; 
@@ -332,7 +327,6 @@
 
     .admin-btn.delete { background: var(--danger); }
 
-    /* Modales optimizados */
     .modal { 
       display: none; 
       position: fixed; 
@@ -360,7 +354,7 @@
       text-align: center;
     }
 
-    .modal-header h2 {
+    .modal-header h2, .modal-header h3 {
       font-size: 1.3rem;
       margin: 0;
     }
@@ -416,7 +410,52 @@
       color: var(--primary);
     }
 
-    /* Carrito items */
+    /* BOTONES DE FOTO MEJORADOS */
+    .foto-botones {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn-foto {
+      flex: 1;
+      padding: 12px;
+      border: 2px dashed var(--primary);
+      border-radius: 12px;
+      background: #f5f5f5;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .btn-foto:hover {
+      background: #e8f5e9;
+      border-style: solid;
+    }
+
+    .btn-foto i {
+      font-size: 1.5rem;
+      color: var(--primary);
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .btn-foto span {
+      font-size: 0.8rem;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .preview-foto {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-top: 10px;
+      display: none;
+      border: 3px solid var(--accent-yellow);
+    }
+
     .cart-item { 
       display: grid; 
       grid-template-columns: 70px 1fr 110px; 
@@ -485,7 +524,6 @@
       color: var(--primary);
     }
 
-    /* Loader simple */
     #loader { 
       position: fixed; 
       inset: 0; 
@@ -503,7 +541,6 @@
       margin-top: 20px;
     }
 
-    /* Happy cart notification */
     #happy-cart { 
       position: fixed; 
       bottom: -100px; 
@@ -521,7 +558,26 @@
 
     #happy-cart.active { bottom: 30px; }
 
-    /* Responsive */
+    /* MODO ELIMINAR ACTIVO */
+    .modo-eliminar-activo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--danger);
+      color: white;
+      text-align: center;
+      padding: 10px;
+      z-index: 9999;
+      font-weight: 700;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
     @media (min-width: 768px) {
       .grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
       .card-img { height: 160px; }
@@ -532,13 +588,11 @@
       .card h3 { font-size: 0.85rem; }
     }
 
-    /* Optimizaciones de rendimiento */
     .card, .gallery-item {
       will-change: transform;
       contain: layout style paint;
     }
 
-    /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f1f1f1; }
     ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
@@ -555,6 +609,12 @@
   <div id="happy-cart">
     <div style="font-size: 2.5rem;">🛒✨</div>
     <div style="font-weight: 700; color: var(--primary); margin-top: 5px;">¡Agregado!</div>
+  </div>
+
+  <!-- Modo Eliminar Banner -->
+  <div id="modoEliminarBanner" class="modo-eliminar-activo" style="display: none;">
+    🗑️ MODO ELIMINAR ACTIVO - Toca un producto para eliminarlo
+    <button onclick="desactivarModoEliminar()" style="margin-left: 10px; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer;">CERRAR</button>
   </div>
 
   <!-- Header -->
@@ -637,11 +697,13 @@
     <div class="modal-content">
       <div class="modal-header">
         <h3>🥦 Nuevo Producto</h3>
-               <button class="btn-add" style="background: #e0e0e0; color: #666; margin-top: 10px;" onclick="cerrarModal('modalProd')">
-          🚯Eliminar o Editar producto✏️
-        </button>
       </div>
       <div class="modal-body">
+        <!-- BOTÓN ELIMINAR/EDITAR AGREGADO AQUÍ -->
+        <button class="btn-add" style="background: #ff6b6b; color: white; margin-bottom: 15px;" onclick="activarModoEliminarDesdeModal()">
+          🗑️ Eliminar o Editar producto ✏️
+        </button>
+
         <input type="hidden" id="pId">
         <div class="form-grid">
           <div class="full-width">
@@ -670,23 +732,44 @@
             <label>Precio unidad ($)</label>
             <input type="number" id="pPreUni" step="1" placeholder="0">
           </div>
+          
+          <!-- SECCIÓN DE FOTOS MEJORADA -->
           <div class="full-width">
-            <label>📷 Foto (toma foto o selecciona)</label>
-            <input type="file" id="pImg" accept="image/*" capture="environment" style="padding: 10px; background: #f5f5f5;">
-            <small style="color: #666; font-size: 0.75rem;">Toca para abrir cámara en celular</small>
+            <label>📷 Foto del producto</label>
+            <div class="foto-botones">
+              <div class="btn-foto" onclick="document.getElementById('pImgCamara').click()">
+                <i class="fas fa-camera"></i>
+                <span>CÁMARA</span>
+              </div>
+              <div class="btn-foto" onclick="document.getElementById('pImgGaleria').click()">
+                <i class="fas fa-images"></i>
+                <span>GALERÍA</span>
+              </div>
+            </div>
+            <!-- Inputs ocultos -->
+            <input type="file" id="pImgCamara" accept="image/*" capture="environment" style="display: none;" onchange="handleFotoSeleccionada(this)">
+            <input type="file" id="pImgGaleria" accept="image/*" style="display: none;" onchange="handleFotoSeleccionada(this)">
+            
+            <!-- Preview de la foto -->
+            <img id="previewFoto" class="preview-foto" alt="Preview">
+            <button type="button" id="btnQuitarFoto" class="btn-add" style="background: var(--danger); margin-top: 10px; display: none; font-size: 0.8rem;" onclick="quitarFoto()">
+              ❌ Quitar foto
+            </button>
           </div>
+
           <div class="full-width" style="display: none;">
-            <label>🖼️ Galería</label>
-            <input type="file" id="gImg" accept="image/*" capture="environment">
+            <label>🖼️ Galería destacada</label>
+            <input type="file" id="gImg" accept="image/*" onchange="handleFotoGaleria(this)">
           </div>
+
           <div class="full-width">
             <label>Descripción</label>
             <textarea id="pDesc" rows="2" placeholder="Descripción corta..."></textarea>
           </div>
         </div>
         
-        <button class="btn-add" style="margin-top: 15px;" onclick="guardar()">
-          💾 GUARDAR
+        <button class="btn-add" style="margin-top: 15px;" onclick="guardar()" id="btnGuardar">
+          💾 GUARDAR PRODUCTO
         </button>
         <button class="btn-add" style="background: #e0e0e0; color: #666; margin-top: 10px;" onclick="cerrarModal('modalProd')">
           Cancelar
@@ -750,10 +833,9 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, push, set, remove, onValue, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    // Configuración Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCuHSlv7WEmoEWh96rWWCnTi7AwgN-7Hd4",
       authDomain: "tatuajes-e7c8f.firebaseapp.com",
@@ -764,7 +846,7 @@
       appId: "1:667800230522:web:1c7f3a49fc5323ba61f9c3"
     };
 
-    // ========== VARIABLES GLOBALES OPTIMIZADAS ==========
+    // ========== VARIABLES GLOBALES ==========
     let app, db, dbRef, galeriaRef;
     let productos = [];
     let galeria = [];
@@ -776,6 +858,8 @@
     let filtroCategoria = 'all';
     let firebaseOk = false;
     let datosCargados = false;
+    let fotoTemporal = null; // Para guardar la foto seleccionada temporalmente
+    let guardando = false; // BANDERA PARA EVITAR DOBLE ENVÍO
 
     // ========== FORMATEO CLP ==========
     const formatearCLP = (valor) => {
@@ -786,10 +870,7 @@
     // ========== CARGAR DESDE LOCALSTORAGE ==========
     try {
       const backupProductos = localStorage.getItem('productos_backup');
-      if (backupProductos) {
-        productos = JSON.parse(backupProductos);
-        console.log('📂 Productos locales:', productos.length);
-      }
+      if (backupProductos) productos = JSON.parse(backupProductos);
       
       const backupGaleria = localStorage.getItem('galeria_backup');
       if (backupGaleria) galeria = JSON.parse(backupGaleria);
@@ -817,6 +898,38 @@
       }
     };
 
+    // ========== MANEJO DE FOTOS ==========
+    window.handleFotoSeleccionada = (input) => {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        fotoTemporal = e.target.result;
+        
+        // Mostrar preview
+        const preview = document.getElementById('previewFoto');
+        const btnQuitar = document.getElementById('btnQuitarFoto');
+        preview.src = fotoTemporal;
+        preview.style.display = 'block';
+        btnQuitar.style.display = 'flex';
+      };
+      reader.readAsDataURL(file);
+    };
+
+    window.handleFotoGaleria = (input) => {
+      // Manejo separado para imagen de galería destacada
+      console.log('Foto de galería seleccionada');
+    };
+
+    window.quitarFoto = () => {
+      fotoTemporal = null;
+      document.getElementById('previewFoto').style.display = 'none';
+      document.getElementById('btnQuitarFoto').style.display = 'none';
+      document.getElementById('pImgCamara').value = '';
+      document.getElementById('pImgGaleria').value = '';
+    };
+
     // ========== INICIALIZAR FIREBASE ==========
     try {
       app = initializeApp(firebaseConfig);
@@ -824,13 +937,9 @@
       dbRef = ref(db, 'productos');
       galeriaRef = ref(db, 'galeria_ferre');
       
-      // Auth anónima
       signInAnonymously(getAuth(app)).catch(() => {});
 
-      // Listener optimizado con limitToLast para no cargar todo de golpe
       onValue(dbRef, (snap) => {
-        console.log('📥 Firebase actualizado. Items:', snap.size || 0);
-        
         if (snap.exists()) {
           const nuevosProductos = [];
           snap.forEach((childSnap) => {
@@ -852,12 +961,10 @@
         renderGaleria();
         actualizarCarritoUI();
         ocultarLoader();
-      }, (error) => {
-        console.error('Firebase error:', error);
+      }, () => {
         usarDatosLocales();
       });
 
-      // Listener galería
       onValue(galeriaRef, (snap) => {
         const nuevaGaleria = [];
         snap.forEach((childSnap) => {
@@ -873,11 +980,9 @@
       });
 
     } catch (e) {
-      console.error('Error Firebase init:', e);
       usarDatosLocales();
     }
 
-    // Timeout seguridad
     setTimeout(() => {
       if (!datosCargados) usarDatosLocales();
     }, 4000);
@@ -891,7 +996,6 @@
     }
 
     function usarDatosLocales() {
-      console.log('Usando datos locales:', productos.length);
       datosCargados = true;
       render();
       renderGaleria();
@@ -913,138 +1017,233 @@
       }
     };
 
-    // ========== GUARDAR PRODUCTO OPTIMIZADO ==========
+    // ========== MODO ELIMINAR/EDITAR ==========
+    window.activarModoEliminarDesdeModal = () => {
+      cerrarModal('modalProd');
+      modoEliminar = true;
+      document.getElementById('modoEliminarBanner').style.display = 'block';
+      render();
+      renderGaleria();
+    };
+
+    window.desactivarModoEliminar = () => {
+      modoEliminar = false;
+      document.getElementById('modoEliminarBanner').style.display = 'none';
+      render();
+      renderGaleria();
+    };
+
+    // ========== GUARDAR PRODUCTO - CORREGIDO PARA NO DUPLICAR ==========
     window.guardar = async () => {
+      // BANDERA ANTI-DOBLE-CLIC
+      if (guardando) {
+        console.log('⏳ Ya se está guardando...');
+        return;
+      }
+      
       const nom = document.getElementById('pNom')?.value.trim();
       if (!nom) {
         alert('⚠️ El nombre es obligatorio');
         return;
       }
       
-      const id = document.getElementById('pId')?.value || '';
-      const file = document.getElementById('pImg')?.files[0];
+      // Activar bandera de guardado
+      guardando = true;
+      const btnGuardar = document.getElementById('btnGuardar');
+      const textoOriginal = btnGuardar?.innerHTML;
+      if (btnGuardar) {
+        btnGuardar.innerHTML = '⏳ Guardando...';
+        btnGuardar.disabled = true;
+      }
       
-      const data = {
-        nombre: nom,
-        categoria: document.getElementById('pCat')?.value || 'Frutas',
-        precioKilo: parseFloat(document.getElementById('pPreKg')?.value) || 0,
-        precioUnidad: parseFloat(document.getElementById('pPreUni')?.value) || 0,
-        stock: parseInt(document.getElementById('pStock')?.value) || 0,
-        desc: document.getElementById('pDesc')?.value.trim() || '',
-        foto: 'https://via.placeholder.com/200',
-        updatedAt: Date.now()
-      };
-
-      if (!id) data.createdAt = Date.now();
-
-      // Procesar imagen con compresión para celular
-      const procesarImagen = (fileOrBase64) => {
-        return new Promise((resolve) => {
-          if (!fileOrBase64) {
-            resolve(null);
-            return;
-          }
-
-          const img = new Image();
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-
-          img.onload = () => {
-            // Redimensionar a máximo 800px para ahorrar memoria
-            const maxWidth = 800;
-            const scale = maxWidth / img.width;
-            const width = img.width > maxWidth ? maxWidth : img.width;
-            const height = img.width > maxWidth ? img.height * scale : img.height;
-
-            canvas.width = width;
-            canvas.height = height;
-            ctx.drawImage(img, 0, 0, width, height);
-
-            // Comprimir a JPEG 80% calidad
-            const compressed = canvas.toDataURL('image/jpeg', 0.8);
-            resolve(compressed);
-          };
-
-          if (typeof fileOrBase64 === 'string') {
-            img.src = fileOrBase64;
-          } else {
-            const reader = new FileReader();
-            reader.onload = (e) => img.src = e.target.result;
-            reader.readAsDataURL(fileOrBase64);
-          }
-        });
-      };
-
       try {
-        let fotoBase64 = null;
-        if (file) {
-          fotoBase64 = await procesarImagen(file);
+        const id = document.getElementById('pId')?.value || '';
+        
+        // Verificar si es edición o nuevo
+        const esEdicion = !!id;
+        
+        const data = {
+          nombre: nom,
+          categoria: document.getElementById('pCat')?.value || 'Frutas',
+          precioKilo: parseFloat(document.getElementById('pPreKg')?.value) || 0,
+          precioUnidad: parseFloat(document.getElementById('pPreUni')?.value) || 0,
+          stock: parseInt(document.getElementById('pStock')?.value) || 0,
+          desc: document.getElementById('pDesc')?.value.trim() || '',
+          updatedAt: Date.now()
+        };
+
+        if (!esEdicion) {
+          data.createdAt = Date.now();
         }
 
-        if (fotoBase64) data.foto = fotoBase64;
-        else if (id) {
+        // Procesar imagen temporal si existe
+        let fotoFinal = null;
+        if (fotoTemporal) {
+          fotoFinal = await comprimirImagen(fotoTemporal);
+        }
+
+        if (fotoFinal) {
+          data.foto = fotoFinal;
+        } else if (esEdicion) {
+          // Mantener foto anterior si es edición y no hay nueva foto
           const existente = productos.find(p => p.id === id);
           if (existente?.foto) data.foto = existente.foto;
-        }
-
-        if (id) {
-          // Actualizar
-          await set(ref(db, 'productos/' + id), data);
-          const idx = productos.findIndex(p => p.id === id);
-          if (idx >= 0) productos[idx] = { id, ...data };
+          else data.foto = 'https://via.placeholder.com/200';
         } else {
-          // Nuevo
+          data.foto = 'https://via.placeholder.com/200';
+        }
+
+        if (esEdicion) {
+          // ===== EDITAR EXISTENTE =====
+          await set(ref(db, 'productos/' + id), data);
+          
+          // Actualizar array local
+          const idx = productos.findIndex(p => p.id === id);
+          if (idx >= 0) {
+            productos[idx] = { id, ...data };
+          }
+          
+          console.log('✅ Producto actualizado:', id);
+          
+        } else {
+          // ===== NUEVO PRODUCTO =====
+          // Verificar que no exista ya uno con el mismo nombre (prevención extra)
+          const existe = productos.find(p => p.nombre.toLowerCase() === nom.toLowerCase());
+          if (existe && !confirm('⚠️ Ya existe un producto con este nombre. ¿Crear de todos modos?')) {
+            guardando = false;
+            if (btnGuardar) {
+              btnGuardar.innerHTML = textoOriginal;
+              btnGuardar.disabled = false;
+            }
+            return;
+          }
+          
           const nuevoRef = await push(dbRef, data);
-          productos.push({ id: nuevoRef.key, ...data });
+          const newId = nuevoRef.key;
+          
+          // Agregar al array local SOLO UNA VEZ
+          productos.push({ id: newId, ...data });
+          
+          console.log('✅ Nuevo producto creado:', newId);
+          
+          // Guardar en galería si corresponde
+          const gImgInput = document.getElementById('gImg');
+          if (gImgInput?.files?.[0] && fotoFinal) {
+            await push(galeriaRef, { url: fotoFinal, createdAt: Date.now() });
+          }
         }
 
+        // Guardar en localStorage
         localStorage.setItem('productos_backup', JSON.stringify(productos));
-        render();
-        cerrarModal('modalProd');
-        limpiarFormulario();
         
-        // Guardar en galería también si hay foto
-        if (fotoBase64 && document.getElementById('gImg')?.files[0]) {
-          await push(galeriaRef, { url: fotoBase64, createdAt: Date.now() });
-        }
-
-      } catch (e) {
-        console.error('Error guardando:', e);
-        // Guardar localmente si falla
-        const tempId = id || 'local-' + Date.now();
-        if (!id) productos.push({ id: tempId, ...data });
-        localStorage.setItem('productos_backup', JSON.stringify(productos));
-        render();
+        // Limpiar y cerrar
+        limpiarFormulario();
         cerrarModal('modalProd');
-        alert('⚠️ Guardado localmente. Se sincronizará luego.');
+        
+        // Renderizar
+        render();
+        
+      } catch (e) {
+        console.error('❌ Error guardando:', e);
+        
+        // Modo offline: guardar localmente
+        const id = document.getElementById('pId')?.value || '';
+        const esEdicion = !!id;
+        
+        if (!esEdicion) {
+          const tempId = 'local-' + Date.now();
+          const dataLocal = {
+            nombre: nom,
+            categoria: document.getElementById('pCat')?.value || 'Frutas',
+            precioKilo: parseFloat(document.getElementById('pPreKg')?.value) || 0,
+            precioUnidad: parseFloat(document.getElementById('pPreUni')?.value) || 0,
+            stock: parseInt(document.getElementById('pStock')?.value) || 0,
+            desc: document.getElementById('pDesc')?.value.trim() || '',
+            foto: fotoTemporal || 'https://via.placeholder.com/200',
+            createdAt: Date.now()
+          };
+          
+          productos.push({ id: tempId, ...dataLocal });
+          localStorage.setItem('productos_backup', JSON.stringify(productos));
+          
+          limpiarFormulario();
+          cerrarModal('modalProd');
+          render();
+          
+          alert('⚠️ Guardado localmente. Se sincronizará cuando haya conexión.');
+        }
+        
+      } finally {
+        // Resetear bandera SIEMPRE
+        guardando = false;
+        if (btnGuardar) {
+          btnGuardar.innerHTML = textoOriginal || '💾 GUARDAR PRODUCTO';
+          btnGuardar.disabled = false;
+        }
       }
     };
 
-    function limpiarFormulario() {
-      ['pId', 'pNom', 'pPreKg', 'pPreUni', 'pStock', 'pDesc'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
+    // Función para comprimir imagen
+    async function comprimirImagen(base64String) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        img.onload = () => {
+          const maxWidth = 800;
+          const scale = maxWidth / img.width;
+          const width = img.width > maxWidth ? maxWidth : img.width;
+          const height = img.width > maxWidth ? img.height * scale : img.height;
+
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const compressed = canvas.toDataURL('image/jpeg', 0.8);
+          resolve(compressed);
+        };
+
+        img.src = base64String;
       });
-      const img = document.getElementById('pImg');
-      if (img) img.value = '';
+    }
+
+    function limpiarFormulario() {
+      document.getElementById('pId').value = '';
+      document.getElementById('pNom').value = '';
+      document.getElementById('pPreKg').value = '';
+      document.getElementById('pPreUni').value = '';
+      document.getElementById('pStock').value = '0';
+      document.getElementById('pDesc').value = '';
+      quitarFoto(); // Limpiar foto temporal
     }
 
     window.editar = (id) => {
+      // Desactivar modo eliminar si está activo
+      if (modoEliminar) {
+        desactivarModoEliminar();
+      }
+      
       const p = productos.find(x => x.id === id);
       if (!p) return;
       
-      const setVal = (id, val) => {
-        const el = document.getElementById(id);
-        if (el) el.value = val || '';
-      };
+      document.getElementById('pId').value = id;
+      document.getElementById('pNom').value = p.nombre || '';
+      document.getElementById('pCat').value = p.categoria || 'Frutas';
+      document.getElementById('pPreKg').value = p.precioKilo || '';
+      document.getElementById('pPreUni').value = p.precioUnidad || '';
+      document.getElementById('pStock').value = p.stock || 0;
+      document.getElementById('pDesc').value = p.desc || '';
       
-      setVal('pId', id);
-      setVal('pNom', p.nombre);
-      setVal('pCat', p.categoria);
-      setVal('pPreKg', p.precioKilo);
-      setVal('pPreUni', p.precioUnidad);
-      setVal('pStock', p.stock);
-      setVal('pDesc', p.desc);
+      // Mostrar foto existente si hay
+      if (p.foto && p.foto !== 'https://via.placeholder.com/200') {
+        fotoTemporal = p.foto;
+        const preview = document.getElementById('previewFoto');
+        const btnQuitar = document.getElementById('btnQuitarFoto');
+        preview.src = p.foto;
+        preview.style.display = 'block';
+        btnQuitar.style.display = 'flex';
+      }
       
       abrirModal('modalProd');
     };
@@ -1062,7 +1261,7 @@
           alert('Error al eliminar');
         }
       };
-      document.getElementById('confirmMessage').innerText = '¿Eliminar producto?';
+      document.getElementById('confirmMessage').innerText = '¿Eliminar este producto permanentemente?';
       abrirModal('modalConfirm');
     };
 
@@ -1075,7 +1274,7 @@
           renderGaleria();
         } catch (e) {}
       };
-      document.getElementById('confirmMessage').innerText = '¿Eliminar imagen?';
+      document.getElementById('confirmMessage').innerText = '¿Eliminar esta imagen?';
       abrirModal('modalConfirm');
     };
 
@@ -1087,6 +1286,12 @@
 
     // ========== CARRITO ==========
     window.abrirVariantes = (id) => {
+      // Si está en modo eliminar, eliminar el producto
+      if (modoEliminar) {
+        borrarDB(id);
+        return;
+      }
+      
       const p = productos.find(x => x.id === id);
       if (!p) return;
       
@@ -1164,7 +1369,6 @@
       cerrarModal('modalVariantes');
       actualizarCarritoUI();
       
-      // Happy cart
       const happy = document.getElementById('happy-cart');
       happy?.classList.add('active');
       setTimeout(() => happy?.classList.remove('active'), 2000);
@@ -1227,7 +1431,6 @@
         
         msg += `📦 ${p.nombre}\n   ${item.cantidad}${item.modo === 'kilo' ? 'kg' : 'u'} x ${formatearCLP(precio)} = ${formatearCLP(sub)}\n`;
         
-        // Actualizar stock
         if (firebaseOk && p.id && !p.id.startsWith('local-')) {
           const nuevoStock = Math.max(0, p.stock - Math.ceil(item.cantidad));
           set(ref(db, `productos/${p.id}/stock`), nuevoStock).catch(() => {});
@@ -1246,7 +1449,7 @@
       window.open(`https://wa.me/56954998792?text=${encodeURIComponent(msg)}`, '_blank');
     };
 
-    // ========== RENDER OPTIMIZADO ==========
+    // ========== RENDER ==========
     function actualizarCarritoUI() {
       const list = document.getElementById('cartList');
       const count = document.getElementById('cartCount');
@@ -1303,7 +1506,6 @@
       const grid = document.getElementById('listaProductos');
       if (!grid) return;
       
-      // Usar DocumentFragment para mejor rendimiento con 125+ items
       const fragment = document.createDocumentFragment();
       
       const filtrados = productos.filter(p => {
@@ -1324,9 +1526,8 @@
         return;
       }
       
-      // Renderizado por lotes para no bloquear UI
       const renderLote = (startIdx) => {
-        const loteSize = 20; // Renderizar de 20 en 20
+        const loteSize = 20;
         const endIdx = Math.min(startIdx + loteSize, filtrados.length);
         
         for (let i = startIdx; i < endIdx; i++) {
@@ -1337,10 +1538,18 @@
           
           const card = document.createElement('div');
           card.className = 'card';
+          
+          // Si está en modo eliminar, agregar indicador visual
+          const eliminarOverlay = modoEliminar ? 
+            `<div style="position: absolute; inset: 0; background: rgba(255,23,68,0.2); z-index: 5; display: flex; align-items: center; justify-content: center; pointer-events: none;">
+              <span style="background: var(--danger); color: white; padding: 10px 20px; border-radius: 10px; font-weight: 700; font-size: 1.2rem;">🗑️ TOCAR PARA ELIMINAR</span>
+            </div>` : '';
+          
           card.innerHTML = `
-            ${isAdmin ? `<div class="admin-btns">
-              <button class="admin-btn" onclick="editar('${p.id}')">✏️</button>
-              <button class="admin-btn delete" onclick="borrarDB('${p.id}')">🗑️</button>
+            ${eliminarOverlay}
+            ${isAdmin && !modoEliminar ? `<div class="admin-btns">
+              <button class="admin-btn" onclick="event.stopPropagation(); editar('${p.id}')">✏️</button>
+              <button class="admin-btn delete" onclick="event.stopPropagation(); borrarDB('${p.id}')">🗑️</button>
             </div>` : ''}
             
             <div class="card-img">
@@ -1359,8 +1568,8 @@
                 ${p.precioKilo > 0 ? `${formatearCLP(p.precioKilo)}/kg ` : ''}
                 ${p.precioUnidad > 0 ? `${formatearCLP(p.precioUnidad)}/u` : ''}
               </div>
-              <button class="btn-add" ${sinStock ? 'disabled' : ''} onclick="abrirVariantes('${p.id}')">
-                ${sinStock ? 'AGOTADO' : 'AGREGAR 🛒'}
+              <button class="btn-add" ${sinStock || modoEliminar ? 'disabled' : ''} onclick="abrirVariantes('${p.id}')">
+                ${modoEliminar ? 'TOCA PARA ELIMINAR' : sinStock ? 'AGOTADO' : 'AGREGAR 🛒'}
               </button>
             </div>
           `;
@@ -1388,9 +1597,9 @@
       }
       
       cont.innerHTML = galeria.map(g => `
-        <div class="gallery-item">
+        <div class="gallery-item" style="${modoEliminar ? 'border-color: var(--danger);' : ''}">
           <img src="${g.url}" onerror="this.style.display='none'" loading="lazy">
-          ${isAdmin ? `<button class="gallery-delete" onclick="borrarImgGaleria('${g.id}')">✕</button>` : ''}
+          ${isAdmin || modoEliminar ? `<button class="gallery-delete" onclick="borrarImgGaleria('${g.id}')">✕</button>` : ''}
         </div>
       `).join('');
     }
@@ -1412,6 +1621,13 @@
 
     document.getElementById('payMethod')?.addEventListener('change', actualizarCarritoUI);
     document.getElementById('customerName')?.addEventListener('input', actualizarCarritoUI);
+
+    // Cerrar modal al hacer clic fuera
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) cerrarModal(modal.id);
+      });
+    });
 
     // ========== INICIALIZACIÓN ==========
     console.log('🚀 NORMITA iniciado');
