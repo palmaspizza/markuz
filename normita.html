@@ -596,9 +596,81 @@
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f1f1f1; }
     ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+    
+    /* ESTILOS PARA FOTO AMPLIADA - CORREGIDOS */
+    .card-img-clickable {
+      cursor: zoom-in !important;
+      position: relative;
+    }
+
+    .card-img-clickable:active {
+      opacity: 0.9;
+    }
+
+    .zoom-hint {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    #modalFoto {
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(10px);
+      z-index: 5000;
+    }
+
+    #modalFoto > div {
+      position: relative;
+      width: 95vw;
+      height: 95vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #fotoAmpliada {
+      max-width: 95vw;
+      max-height: 95vh;
+      object-fit: contain;
+      border-radius: 10px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    .btn-cerrar-foto {
+      position: absolute;
+      top: -50px;
+      right: 0;
+      background: white;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
+  <!-- Modal Foto Ampliada - CORREGIDO -->
+  <div class="modal" id="modalFoto" onclick="cerrarModal('modalFoto')">
+    <div>
+      <img id="fotoAmpliada" src="" alt="Producto">
+      <button class="btn-cerrar-foto" onclick="event.stopPropagation(); cerrarModal('modalFoto')">✕</button>
+    </div>
+  </div>
+
   <!-- Loader -->
   <div id="loader">
     <div style="font-size: 3rem;">🥬</div>
@@ -607,7 +679,7 @@
 
   <!-- Happy Cart -->
   <div id="happy-cart">
-    <div style="font-size: 2.5rem;">🛒✨</div>
+
     <div style="font-weight: 700; color: var(--primary); margin-top: 5px;">¡Agregado!</div>
   </div>
 
@@ -831,6 +903,24 @@
     </div>
   </div>
 
+  <!-- Modal Producto Grande -->
+  <div class="modal" id="modalProductoGrande">
+    <div class="modal-content" style="width: 98vw; max-width: 1200px; max-height: 95vh;">
+     <br> <button class="btn-add" id="btnProductoAgregar">AGREGAR 🛒</button>
+          <button class="btn-add" style="background:#e0e0e0; color:#666; margin-top:10px" onclick="cerrarModal('modalProductoGrande')">Cancelar</button>
+         <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px; align-items: center;">
+        <img id="productoImg" src="https://via.placeholder.com/400" alt="Producto" style="width: 100%; height: 78vh; object-fit: contain; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);" onerror="this.src='https://via.placeholder.com/400'">
+        <div style="width: 100%; max-width: 900px;">
+          <input type="hidden" id="productoId">
+          <h3 id="productoNombre" style="margin:0 0 8px; color: var(--primary); font-size: 1.6rem; font-weight: 800;"></h3>
+          <div id="productoStock" class="stock-badge" style="margin-bottom: 10px;"></div>
+          <div id="productoPrecios" style="font-size:1.2rem; font-weight:900; margin-bottom:12px; display:flex; gap:10px; flex-wrap:wrap"></div>
+          <div id="productoDesc" style="font-size:0.95rem; color:#444; line-height:1.5; margin-bottom: 16px;"></div>
+         </div>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, push, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -858,13 +948,52 @@
     let filtroCategoria = 'all';
     let firebaseOk = false;
     let datosCargados = false;
-    let fotoTemporal = null; // Para guardar la foto seleccionada temporalmente
-    let guardando = false; // BANDERA PARA EVITAR DOBLE ENVÍO
+    let fotoTemporal = null;
+    let guardando = false;
 
     // ========== FORMATEO CLP ==========
     const formatearCLP = (valor) => {
       if (!valor || valor === 0) return '$0';
       return '$' + Math.round(valor).toLocaleString('es-CL');
+    };
+
+    // ========== FUNCIÓN AMPLIAR FOTO - DEFINIDA PRIMERO ==========
+    window.ampliarFoto = (url, nombre) => {
+      const img = document.getElementById('fotoAmpliada');
+      if (img) {
+        img.src = url;
+        img.alt = nombre || 'Producto';
+        abrirModal('modalFoto');
+      }
+    };
+
+    window.abrirProductoGrande = (id) => {
+      const p = productos.find(x => x.id === id);
+      if (!p) return;
+      const img = document.getElementById('productoImg');
+      const nom = document.getElementById('productoNombre');
+      const desc = document.getElementById('productoDesc');
+      const precios = document.getElementById('productoPrecios');
+      const stock = document.getElementById('productoStock');
+      const hid = document.getElementById('productoId');
+      const btn = document.getElementById('btnProductoAgregar');
+      if (!img || !nom || !desc || !precios || !stock || !hid || !btn) return;
+      img.src = p.foto || 'https://via.placeholder.com/400';
+      img.alt = p.nombre || 'Producto';
+      nom.textContent = p.nombre || 'Sin nombre';
+      desc.textContent = p.desc || '';
+      precios.innerHTML = `
+        ${p.precioKilo > 0 ? `<span class="price-tag price-kilo">${formatearCLP(p.precioKilo)}/kg</span>` : ''}
+        ${p.precioUnidad > 0 ? `<span class="price-tag price-unit">${formatearCLP(p.precioUnidad)}/u</span>` : ''}
+      `;
+      const stockBajo = p.stock > 0 && p.stock <= 5;
+      const sinStock = !p.stock || p.stock <= 0;
+      stock.className = `stock-badge ${sinStock ? 'stock-badge-out' : stockBajo ? 'stock-badge-low' : 'stock-badge-ok'}`;
+      stock.textContent = sinStock ? 'AGOTADO' : stockBajo ? `POCO STOCK (${p.stock})` : `DISPONIBLE (${p.stock || 0})`;
+      hid.value = id;
+      btn.disabled = sinStock || modoEliminar;
+      btn.onclick = () => { cerrarModal('modalProductoGrande'); abrirVariantes(id); };
+      abrirModal('modalProductoGrande');
     };
 
     // ========== CARGAR DESDE LOCALSTORAGE ==========
@@ -907,7 +1036,6 @@
       reader.onload = (e) => {
         fotoTemporal = e.target.result;
         
-        // Mostrar preview
         const preview = document.getElementById('previewFoto');
         const btnQuitar = document.getElementById('btnQuitarFoto');
         preview.src = fotoTemporal;
@@ -918,7 +1046,6 @@
     };
 
     window.handleFotoGaleria = (input) => {
-      // Manejo separado para imagen de galería destacada
       console.log('Foto de galería seleccionada');
     };
 
@@ -1033,9 +1160,8 @@
       renderGaleria();
     };
 
-    // ========== GUARDAR PRODUCTO - CORREGIDO PARA NO DUPLICAR ==========
+    // ========== GUARDAR PRODUCTO ==========
     window.guardar = async () => {
-      // BANDERA ANTI-DOBLE-CLIC
       if (guardando) {
         console.log('⏳ Ya se está guardando...');
         return;
@@ -1047,7 +1173,6 @@
         return;
       }
       
-      // Activar bandera de guardado
       guardando = true;
       const btnGuardar = document.getElementById('btnGuardar');
       const textoOriginal = btnGuardar?.innerHTML;
@@ -1058,8 +1183,6 @@
       
       try {
         const id = document.getElementById('pId')?.value || '';
-        
-        // Verificar si es edición o nuevo
         const esEdicion = !!id;
         
         const data = {
@@ -1076,7 +1199,6 @@
           data.createdAt = Date.now();
         }
 
-        // Procesar imagen temporal si existe
         let fotoFinal = null;
         if (fotoTemporal) {
           fotoFinal = await comprimirImagen(fotoTemporal);
@@ -1085,7 +1207,6 @@
         if (fotoFinal) {
           data.foto = fotoFinal;
         } else if (esEdicion) {
-          // Mantener foto anterior si es edición y no hay nueva foto
           const existente = productos.find(p => p.id === id);
           if (existente?.foto) data.foto = existente.foto;
           else data.foto = 'https://via.placeholder.com/200';
@@ -1094,20 +1215,13 @@
         }
 
         if (esEdicion) {
-          // ===== EDITAR EXISTENTE =====
           await set(ref(db, 'productos/' + id), data);
-          
-          // Actualizar array local
           const idx = productos.findIndex(p => p.id === id);
           if (idx >= 0) {
             productos[idx] = { id, ...data };
           }
-          
           console.log('✅ Producto actualizado:', id);
-          
         } else {
-          // ===== NUEVO PRODUCTO =====
-          // Verificar que no exista ya uno con el mismo nombre (prevención extra)
           const existe = productos.find(p => p.nombre.toLowerCase() === nom.toLowerCase());
           if (existe && !confirm('⚠️ Ya existe un producto con este nombre. ¿Crear de todos modos?')) {
             guardando = false;
@@ -1120,33 +1234,23 @@
           
           const nuevoRef = await push(dbRef, data);
           const newId = nuevoRef.key;
-          
-          // Agregar al array local SOLO UNA VEZ
           productos.push({ id: newId, ...data });
-          
           console.log('✅ Nuevo producto creado:', newId);
           
-          // Guardar en galería si corresponde
           const gImgInput = document.getElementById('gImg');
           if (gImgInput?.files?.[0] && fotoFinal) {
             await push(galeriaRef, { url: fotoFinal, createdAt: Date.now() });
           }
         }
 
-        // Guardar en localStorage
         localStorage.setItem('productos_backup', JSON.stringify(productos));
-        
-        // Limpiar y cerrar
         limpiarFormulario();
         cerrarModal('modalProd');
-        
-        // Renderizar
         render();
         
       } catch (e) {
         console.error('❌ Error guardando:', e);
         
-        // Modo offline: guardar localmente
         const id = document.getElementById('pId')?.value || '';
         const esEdicion = !!id;
         
@@ -1165,16 +1269,12 @@
           
           productos.push({ id: tempId, ...dataLocal });
           localStorage.setItem('productos_backup', JSON.stringify(productos));
-          
           limpiarFormulario();
           cerrarModal('modalProd');
           render();
-          
           alert('⚠️ Guardado localmente. Se sincronizará cuando haya conexión.');
         }
-        
       } finally {
-        // Resetear bandera SIEMPRE
         guardando = false;
         if (btnGuardar) {
           btnGuardar.innerHTML = textoOriginal || '💾 GUARDAR PRODUCTO';
@@ -1183,7 +1283,6 @@
       }
     };
 
-    // Función para comprimir imagen
     async function comprimirImagen(base64String) {
       return new Promise((resolve) => {
         const img = new Image();
@@ -1215,11 +1314,10 @@
       document.getElementById('pPreUni').value = '';
       document.getElementById('pStock').value = '0';
       document.getElementById('pDesc').value = '';
-      quitarFoto(); // Limpiar foto temporal
+      quitarFoto();
     }
 
     window.editar = (id) => {
-      // Desactivar modo eliminar si está activo
       if (modoEliminar) {
         desactivarModoEliminar();
       }
@@ -1235,7 +1333,6 @@
       document.getElementById('pStock').value = p.stock || 0;
       document.getElementById('pDesc').value = p.desc || '';
       
-      // Mostrar foto existente si hay
       if (p.foto && p.foto !== 'https://via.placeholder.com/200') {
         fotoTemporal = p.foto;
         const preview = document.getElementById('previewFoto');
@@ -1286,7 +1383,6 @@
 
     // ========== CARRITO ==========
     window.abrirVariantes = (id) => {
-      // Si está en modo eliminar, eliminar el producto
       if (modoEliminar) {
         borrarDB(id);
         return;
@@ -1539,12 +1635,12 @@
           const card = document.createElement('div');
           card.className = 'card';
           
-          // Si está en modo eliminar, agregar indicador visual
           const eliminarOverlay = modoEliminar ? 
             `<div style="position: absolute; inset: 0; background: rgba(255,23,68,0.2); z-index: 5; display: flex; align-items: center; justify-content: center; pointer-events: none;">
               <span style="background: var(--danger); color: white; padding: 10px 20px; border-radius: 10px; font-weight: 700; font-size: 1.2rem;">🗑️ TOCAR PARA ELIMINAR</span>
             </div>` : '';
           
+          // CORREGIDO: Agregado onclick en card-img para ampliar foto
           card.innerHTML = `
             ${eliminarOverlay}
             ${isAdmin && !modoEliminar ? `<div class="admin-btns">
@@ -1552,10 +1648,11 @@
               <button class="admin-btn delete" onclick="event.stopPropagation(); borrarDB('${p.id}')">🗑️</button>
             </div>` : ''}
             
-            <div class="card-img">
+            <div class="card-img card-img-clickable" onclick="abrirProductoGrande('${p.id}')">
               <img src="${p.foto || 'https://via.placeholder.com/200'}" 
                    onerror="this.src='https://via.placeholder.com/200'" 
                    alt="${p.nombre}" loading="lazy">
+              <div class="zoom-hint">🔍 Toca para ampliar</div>
             </div>
             
             <div class="card-info">
@@ -1568,7 +1665,7 @@
                 ${p.precioKilo > 0 ? `${formatearCLP(p.precioKilo)}/kg ` : ''}
                 ${p.precioUnidad > 0 ? `${formatearCLP(p.precioUnidad)}/u` : ''}
               </div>
-              <button class="btn-add" ${sinStock || modoEliminar ? 'disabled' : ''} onclick="abrirVariantes('${p.id}')">
+              <button class="btn-add" ${sinStock || modoEliminar ? 'disabled' : ''} onclick="event.stopPropagation(); abrirVariantes('${p.id}')">
                 ${modoEliminar ? 'TOCA PARA ELIMINAR' : sinStock ? 'AGOTADO' : 'AGREGAR 🛒'}
               </button>
             </div>
