@@ -2011,13 +2011,16 @@
       renderLote(0);
     }
 function copiarPrecio() {
-    // Obtener el valor del input "precioAproxCalculado"
-    var precio = document.getElementById("precioAproxCalculado").value;
+    const precioKg = parseFloat(document.getElementById('pPreKg')?.value) || 0;
+    const pesoUni = parseFloat(document.getElementById('pPesoUni')?.value) || 0.4;
     
-    // Asignar ese valor al input "pPreUni"
-    document.getElementById("pPreUni").value = precio;
-}setInterval(copiarPrecio, 100);
+    if (precioKg > 0 && pesoUni > 0) {
+        const precioUnidad = Math.round(precioKg * pesoUni);
+        document.getElementById("pPreUni").value = precioUnidad;
+    }
+}
 
+setInterval(copiarPrecio, 100);
     function renderGaleria() {
       const cont = document.getElementById('galeriaSuperior');
       if (!cont) return;
