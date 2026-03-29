@@ -891,8 +891,13 @@
             <textarea id="pDesc" rows="2" placeholder="Descripción ..."></textarea>
           </div>
         </div>
-        
-        <button class="btn-add" style="margin-top: 15px;" onclick="guardar()" id="btnGuardar">
+        <script>
+          function recargarPagina() {
+  location.reload();
+}
+
+        </script>
+        <button class="btn-add" style="margin-top: 15px;" onclick="guardar();recargarPagina();" id="btnGuardar">
           💾 GUARDAR PRODUCTO
         </button>
         <button class="btn-add" style="background: #e0e0e0; color: #666; margin-top: 10px;" onclick="cerrarModal('modalProd')">
