@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🥬 NORMITA | Mercado Fresco</title>
+  <title>🥬 NORMITA | Verdulería</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
@@ -280,6 +280,17 @@
       margin-bottom: 10px;
     }
 
+    .precio-aprox {
+      font-size: 0.75rem;
+      color: #666;
+      font-weight: 600;
+      margin-bottom: 8px;
+      background: #f5f5f5;
+      padding: 4px 8px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
     .btn-add { 
       width: 100%; 
       padding: 10px; 
@@ -410,7 +421,6 @@
       color: var(--primary);
     }
 
-    /* BOTONES DE FOTO MEJORADOS */
     .foto-botones {
       display: flex;
       gap: 10px;
@@ -492,7 +502,9 @@
       font-size: 1rem;
       font-weight: 700;
     }
-
+    input{
+       box-shadow: rgb(53, 12, 12) 4px 4px 4px;
+    }
     .qty-input { 
       width: 40px; 
       text-align: center; 
@@ -501,7 +513,10 @@
       font-weight: 700;
       padding: 0;
     }
-
+    button{
+       box-shadow: rgb(56, 14, 14) 2px 2px 2px;
+       border: 1px solid black;
+    }
     .btn-delete-item { 
       color: var(--danger); 
       background: none; 
@@ -558,7 +573,6 @@
 
     #happy-cart.active { bottom: 30px; }
 
-    /* MODO ELIMINAR ACTIVO */
     .modo-eliminar-activo {
       position: fixed;
       top: 0;
@@ -597,7 +611,6 @@
     ::-webkit-scrollbar-track { background: #f1f1f1; }
     ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
     
-    /* ESTILOS PARA FOTO AMPLIADA - CORREGIDOS */
     .card-img-clickable {
       cursor: zoom-in !important;
       position: relative;
@@ -660,10 +673,40 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
       z-index: 10;
     }
+
+    /* Estilos para info de peso en modal */
+    .peso-info {
+      background: #e8f5e9;
+      padding: 10px;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-size: 0.85rem;
+      color: var(--primary);
+    }
+
+    .precio-calc-preview {
+      background: var(--accent-yellow);
+      padding: 15px;
+      border-radius: 10px;
+      margin: 15px 0;
+      text-align: center;
+    }
+
+    .precio-calc-preview .label {
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 5px;
+    }
+
+    .precio-calc-preview .valor {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
   </style>
 </head>
 <body>
-  <!-- Modal Foto Ampliada - CORREGIDO -->
+  <!-- Modal Foto Ampliada -->
   <div class="modal" id="modalFoto" onclick="cerrarModal('modalFoto')">
     <div>
       <img id="fotoAmpliada" src="" alt="Producto">
@@ -674,12 +717,11 @@
   <!-- Loader -->
   <div id="loader">
     <div style="font-size: 3rem;">🥬</div>
-    <div class="loader-text">Cargando NORMITA...</div>
+    <div class="loader-text">Cargando...</div>
   </div>
 
   <!-- Happy Cart -->
   <div id="happy-cart">
-
     <div style="font-weight: 700; color: var(--primary); margin-top: 5px;">¡Agregado!</div>
   </div>
 
@@ -768,14 +810,12 @@
   <div class="modal" id="modalProd">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>🥦 Nuevo Producto</h3>
+        <h3 id="modalProdTitle">🥦 Nuevo Producto</h3>
+        <button class="btn-add" style="background: #ff6b6b; color: white; margin-top: 15px; box-shadow: brown 4px 4px 4px;" onclick="activarModoEliminarDesdeModal()">
+          <span style="background-color: rgb(255, 0, 0); padding: 5px; border-radius: 5px; border: 2px solid white;">🗑️</span> Activar modo eliminar <span style=" border: 2px solid white; background-color: #00c853; padding: 5px; border-radius: 5px;">✏️</span>
+        </button>
       </div>
       <div class="modal-body">
-        <!-- BOTÓN ELIMINAR/EDITAR AGREGADO AQUÍ -->
-        <button class="btn-add" style="background: #ff6b6b; color: white; margin-bottom: 15px;" onclick="activarModoEliminarDesdeModal()">
-          🗑️ Eliminar o Editar producto ✏️
-        </button>
-
         <input type="hidden" id="pId">
         <div class="form-grid">
           <div class="full-width">
@@ -793,19 +833,33 @@
             </select>
           </div>
           <div>
-            <label>Stock</label>
-            <input type="number" id="pStock" placeholder="0" value="0">
+            <label>Stock (kg)</label>
+            <input  type="number" id="pStockKg" placeholder="0" step="0.01" min="0" value="0">
+          </div>
+          <div>
+            <label>Peso promedio por unidad (kg)</label>
+            <input  type="number" id="pPesoUni" step="0.01" min="0.01" placeholder="0.4" value="0.4">
           </div>
           <div>
             <label>Precio kilo ($)</label>
-            <input type="number" id="pPreKg" step="1" placeholder="0">
+            <input  type="number" id="pPreKg" step="1" placeholder="0">
           </div>
           <div>
             <label>Precio unidad ($)</label>
-            <input type="number" id="pPreUni" step="1" placeholder="0">
+            <input type="number" id="pPreUni" step="1" placeholder="0 (opcional)">
           </div>
           
-          <!-- SECCIÓN DE FOTOS MEJORADA -->
+          <!-- Preview de cálculo de precio aproximado -->
+          <div class="full-width">
+            <div class="precio-calc-preview" id="precioCalcPreview" style="display: none;">
+              <div class="label">💡 Precio aproximado por unidad</div>
+              <div class="valor" id="precioAproxCalculado">$0</div>
+              <div style="font-size: 0.75rem; color: #666; margin-top: 5px;">
+                Basado en <span id="pesoMostrado">0.4</span>kg × $<span id="precioKgMostrado">0</span>
+              </div>
+            </div>
+          </div>
+
           <div class="full-width">
             <label>📷 Foto del producto</label>
             <div class="foto-botones">
@@ -818,11 +872,9 @@
                 <span>GALERÍA</span>
               </div>
             </div>
-            <!-- Inputs ocultos -->
             <input type="file" id="pImgCamara" accept="image/*" capture="environment" style="display: none;" onchange="handleFotoSeleccionada(this)">
             <input type="file" id="pImgGaleria" accept="image/*" style="display: none;" onchange="handleFotoSeleccionada(this)">
             
-            <!-- Preview de la foto -->
             <img id="previewFoto" class="preview-foto" alt="Preview">
             <button type="button" id="btnQuitarFoto" class="btn-add" style="background: var(--danger); margin-top: 10px; display: none; font-size: 0.8rem;" onclick="quitarFoto()">
               ❌ Quitar foto
@@ -836,7 +888,7 @@
 
           <div class="full-width">
             <label>Descripción</label>
-            <textarea id="pDesc" rows="2" placeholder="Descripción corta..."></textarea>
+            <textarea id="pDesc" rows="2" placeholder="Descripción ..."></textarea>
           </div>
         </div>
         
@@ -874,7 +926,7 @@
       <div class="modal-body" style="text-align: center; padding: 30px;">
         <div style="font-size: 3rem; margin-bottom: 15px;">⚠️</div>
         <p id="confirmMessage" style="margin-bottom: 20px; font-weight: 600;">¿Confirmar?</p>
-        <button class="btn-add" onclick="confirmarAccion()">
+        <button class="btn-add" id="btnConfirmarSi">
           ✅ Sí
         </button>
         <button class="btn-add" style="background: #e0e0e0; color: #666; margin-top: 10px;" onclick="cerrarModal('modalConfirm')">
@@ -892,7 +944,21 @@
       </div>
       <div class="modal-body">
         <input type="hidden" id="varProdId">
+        
+        <!-- Info de peso para el cliente -->
+        <div class="peso-info" id="pesoInfoCliente" style="display: none;">
+          <i class="fas fa-info-circle"></i>
+          <span id="textoPesoInfo"></span>
+        </div>
+
         <div id="varOptions"></div>
+        
+        <!-- Preview de cálculo en tiempo real -->
+        <div class="precio-calc-preview" id="previewCalculoVariante" style="display: none;">
+          <div class="label">Total estimado</div>
+          <div class="valor" id="totalEstimadoVariante">$0</div>
+        </div>
+
         <button class="btn-add" style="margin-top: 20px;" onclick="confirmarVariantes()">
           ✅ Agregar al carrito
         </button>
@@ -914,6 +980,12 @@
           <input type="hidden" id="productoId">
           <h3 id="productoNombre" style="margin:0 0 8px; color: var(--primary); font-size: 1.6rem; font-weight: 800;"></h3>
           <div id="productoStock" class="stock-badge" style="margin-bottom: 10px;"></div>
+          
+          <!-- Info de peso en vista detallada -->
+          <div class="peso-info" id="productoPesoInfo" style="margin-bottom: 12px;">
+            <i class="fas fa-weight"></i> <span id="productoPesoTexto"></span>
+          </div>
+
           <div id="productoPrecios" style="font-size:1.2rem; font-weight:900; margin-bottom:12px; display:flex; gap:10px; flex-wrap:wrap"></div>
           <div id="productoDesc" style="font-size:0.95rem; color:#444; line-height:1.5; margin-bottom: 16px;"></div>
          </div>
@@ -957,7 +1029,18 @@
       return '$' + Math.round(valor).toLocaleString('es-CL');
     };
 
-    // ========== FUNCIÓN AMPLIAR FOTO - DEFINIDA PRIMERO ==========
+    // ========== CÁLCULO DE PRECIO APROXIMADO POR UNIDAD ==========
+    const calcularPrecioAproxUnidad = (precioKilo, pesoUnidad) => {
+      if (!precioKilo || !pesoUnidad) return 0;
+      return Math.round(precioKilo * pesoUnidad);
+    };
+
+    // ========== CONVERSIÓN DE UNIDADES A KG ==========
+    const unidadesAKilos = (cantidadUnidades, pesoUnidad) => {
+      return cantidadUnidades * (pesoUnidad || 0.4);
+    };
+
+    // ========== FUNCIÓN AMPLIAR FOTO ==========
     window.ampliarFoto = (url, nombre) => {
       const img = document.getElementById('fotoAmpliada');
       if (img) {
@@ -977,19 +1060,37 @@
       const stock = document.getElementById('productoStock');
       const hid = document.getElementById('productoId');
       const btn = document.getElementById('btnProductoAgregar');
+      const pesoInfo = document.getElementById('productoPesoInfo');
+      const pesoTexto = document.getElementById('productoPesoTexto');
+      
       if (!img || !nom || !desc || !precios || !stock || !hid || !btn) return;
+      
       img.src = p.foto || 'https://via.placeholder.com/400';
       img.alt = p.nombre || 'Producto';
       nom.textContent = p.nombre || 'Sin nombre';
       desc.textContent = p.desc || '';
+      
+      // Mostrar info de peso
+      const pesoUni = p.pesoUnidad || 0.4;
+      const stockAproxUnidades = Math.floor((p.stockKilos || 0) / pesoUni);
+      
+      if (pesoTexto) {
+        pesoTexto.innerHTML = `Cada unidad pesa aprox. <strong>${pesoUni}kg</strong> | Stock: ~${stockAproxUnidades} unidades`;
+      }
+      
+      const precioAprox = calcularPrecioAproxUnidad(p.precioKilo, pesoUni);
+      
       precios.innerHTML = `
         ${p.precioKilo > 0 ? `<span class="price-tag price-kilo">${formatearCLP(p.precioKilo)}/kg</span>` : ''}
         ${p.precioUnidad > 0 ? `<span class="price-tag price-unit">${formatearCLP(p.precioUnidad)}/u</span>` : ''}
+        ${(p.precioKilo > 0 && !p.precioUnidad) ? `<span class="price-tag" style="background: var(--accent-yellow); color: var(--primary);">≈ ${formatearCLP(precioAprox)}/u</span>` : ''}
       `;
-      const stockBajo = p.stock > 0 && p.stock <= 5;
-      const sinStock = !p.stock || p.stock <= 0;
+      
+      const stockBajo = (p.stockKilos || 0) > 0 && (p.stockKilos || 0) <= (pesoUni * 5);
+      const sinStock = !p.stockKilos || p.stockKilos <= 0;
       stock.className = `stock-badge ${sinStock ? 'stock-badge-out' : stockBajo ? 'stock-badge-low' : 'stock-badge-ok'}`;
-      stock.textContent = sinStock ? 'AGOTADO' : stockBajo ? `POCO STOCK (${p.stock})` : `DISPONIBLE (${p.stock || 0})`;
+      stock.textContent = sinStock ? 'AGOTADO' : stockBajo ? `POCO STOCK (${p.stockKilos}kg)` : `DISPONIBLE (${p.stockKilos}kg)`;
+      
       hid.value = id;
       btn.disabled = sinStock || modoEliminar;
       btn.onclick = () => { cerrarModal('modalProductoGrande'); abrirVariantes(id); };
@@ -1026,6 +1127,26 @@
         document.body.style.overflow = 'auto';
       }
     };
+
+    // ========== ACTUALIZAR PREVIEW DE PRECIO EN FORMULARIO ==========
+    function actualizarPreviewPrecio() {
+      const precioKg = parseFloat(document.getElementById('pPreKg')?.value) || 0;
+      const pesoUni = parseFloat(document.getElementById('pPesoUni')?.value) || 0.4;
+      const preview = document.getElementById('precioCalcPreview');
+      const valor = document.getElementById('precioAproxCalculado');
+      const pesoMostrado = document.getElementById('pesoMostrado');
+      const precioKgMostrado = document.getElementById('precioKgMostrado');
+      
+      if (precioKg > 0 && pesoUni > 0) {
+        const precioAprox = calcularPrecioAproxUnidad(precioKg, pesoUni);
+        valor.textContent = formatearCLP(precioAprox);
+        pesoMostrado.textContent = pesoUni;
+        precioKgMostrado.textContent = precioKg;
+        preview.style.display = 'block';
+      } else {
+        preview.style.display = 'none';
+      }
+    }
 
     // ========== MANEJO DE FOTOS ==========
     window.handleFotoSeleccionada = (input) => {
@@ -1185,12 +1306,18 @@
         const id = document.getElementById('pId')?.value || '';
         const esEdicion = !!id;
         
+        const stockKg = parseFloat(document.getElementById('pStockKg')?.value) || 0;
+        const pesoUnidad = parseFloat(document.getElementById('pPesoUni')?.value) || 0.4;
+        const precioKilo = parseFloat(document.getElementById('pPreKg')?.value) || 0;
+        const precioUnidad = parseFloat(document.getElementById('pPreUni')?.value) || 0;
+        
         const data = {
           nombre: nom,
           categoria: document.getElementById('pCat')?.value || 'Frutas',
-          precioKilo: parseFloat(document.getElementById('pPreKg')?.value) || 0,
-          precioUnidad: parseFloat(document.getElementById('pPreUni')?.value) || 0,
-          stock: parseInt(document.getElementById('pStock')?.value) || 0,
+          stockKilos: stockKg,
+          pesoUnidad: pesoUnidad,
+          precioKilo: precioKilo,
+          precioUnidad: precioUnidad,
           desc: document.getElementById('pDesc')?.value.trim() || '',
           updatedAt: Date.now()
         };
@@ -1215,13 +1342,36 @@
         }
 
         if (esEdicion) {
-          await set(ref(db, 'productos/' + id), data);
+          // ========== EDICIÓN ==========
+          console.log('Editando producto:', id);
+          
+          // Actualizar en Firebase si está disponible
+          if (db && !id.startsWith('local-')) {
+            try {
+              await set(ref(db, 'productos/' + id), data);
+              console.log('✅ Actualizado en Firebase');
+            } catch (firebaseError) {
+              console.warn('⚠️ Error Firebase:', firebaseError);
+            }
+          }
+          
+          // SIEMPRE actualizar en el array local
           const idx = productos.findIndex(p => p.id === id);
           if (idx >= 0) {
             productos[idx] = { id, ...data };
+          } else {
+            productos.push({ id, ...data });
           }
-          console.log('✅ Producto actualizado:', id);
+          
+          localStorage.setItem('productos_backup', JSON.stringify(productos));
+          console.log('✅ Producto actualizado localmente:', id);
+          
+          limpiarFormulario();
+          cerrarModal('modalProd');
+          render();
+          
         } else {
+          // ========== NUEVO PRODUCTO ==========
           const existe = productos.find(p => p.nombre.toLowerCase() === nom.toLowerCase());
           if (existe && !confirm('⚠️ Ya existe un producto con este nombre. ¿Crear de todos modos?')) {
             guardando = false;
@@ -1232,48 +1382,44 @@
             return;
           }
           
-          const nuevoRef = await push(dbRef, data);
-          const newId = nuevoRef.key;
-          productos.push({ id: newId, ...data });
-          console.log('✅ Nuevo producto creado:', newId);
+          let newId;
           
-          const gImgInput = document.getElementById('gImg');
-          if (gImgInput?.files?.[0] && fotoFinal) {
-            await push(galeriaRef, { url: fotoFinal, createdAt: Date.now() });
+          // Intentar crear en Firebase
+          if (db) {
+            try {
+              const nuevoRef = await push(dbRef, data);
+              newId = nuevoRef.key;
+              console.log('✅ Creado en Firebase:', newId);
+            } catch (firebaseError) {
+              console.warn('⚠️ Error Firebase, creando local:', firebaseError);
+              newId = 'local-' + Date.now();
+            }
+          } else {
+            newId = 'local-' + Date.now();
           }
-        }
-
-        localStorage.setItem('productos_backup', JSON.stringify(productos));
-        limpiarFormulario();
-        cerrarModal('modalProd');
-        render();
-        
-      } catch (e) {
-        console.error('❌ Error guardando:', e);
-        
-        const id = document.getElementById('pId')?.value || '';
-        const esEdicion = !!id;
-        
-        if (!esEdicion) {
-          const tempId = 'local-' + Date.now();
-          const dataLocal = {
-            nombre: nom,
-            categoria: document.getElementById('pCat')?.value || 'Frutas',
-            precioKilo: parseFloat(document.getElementById('pPreKg')?.value) || 0,
-            precioUnidad: parseFloat(document.getElementById('pPreUni')?.value) || 0,
-            stock: parseInt(document.getElementById('pStock')?.value) || 0,
-            desc: document.getElementById('pDesc')?.value.trim() || '',
-            foto: fotoTemporal || 'https://via.placeholder.com/200',
-            createdAt: Date.now()
-          };
           
-          productos.push({ id: tempId, ...dataLocal });
+          // Agregar al array local
+          productos.push({ id: newId, ...data });
           localStorage.setItem('productos_backup', JSON.stringify(productos));
+          
+          // Agregar a galería si corresponde
+          const gImgInput = document.getElementById('gImg');
+          if (gImgInput?.files?.[0] && fotoFinal && db) {
+            try {
+              await push(galeriaRef, { url: fotoFinal, createdAt: Date.now() });
+            } catch (e) {
+              console.warn('Error guardando en galería:', e);
+            }
+          }
+          
           limpiarFormulario();
           cerrarModal('modalProd');
           render();
-          alert('⚠️ Guardado localmente. Se sincronizará cuando haya conexión.');
         }
+        
+      } catch (e) {
+        console.error('❌ Error guardando:', e);
+        alert('❌ Error al guardar: ' + e.message);
       } finally {
         guardando = false;
         if (btnGuardar) {
@@ -1312,8 +1458,11 @@
       document.getElementById('pNom').value = '';
       document.getElementById('pPreKg').value = '';
       document.getElementById('pPreUni').value = '';
-      document.getElementById('pStock').value = '0';
+      document.getElementById('pStockKg').value = '0';
+      document.getElementById('pPesoUni').value = '0.4';
       document.getElementById('pDesc').value = '';
+      document.getElementById('precioCalcPreview').style.display = 'none';
+      document.getElementById('modalProdTitle').textContent = '🥦 Nuevo Producto';
       quitarFoto();
     }
 
@@ -1323,16 +1472,29 @@
       }
       
       const p = productos.find(x => x.id === id);
-      if (!p) return;
+      if (!p) {
+        alert('❌ Producto no encontrado');
+        return;
+      }
       
+      // Limpiar primero
+      limpiarFormulario();
+      
+      // Llenar el formulario con los datos del producto
       document.getElementById('pId').value = id;
       document.getElementById('pNom').value = p.nombre || '';
       document.getElementById('pCat').value = p.categoria || 'Frutas';
       document.getElementById('pPreKg').value = p.precioKilo || '';
       document.getElementById('pPreUni').value = p.precioUnidad || '';
-      document.getElementById('pStock').value = p.stock || 0;
+      document.getElementById('pStockKg').value = p.stockKilos || 0;
+      document.getElementById('pPesoUni').value = p.pesoUnidad || 0.4;
       document.getElementById('pDesc').value = p.desc || '';
+      document.getElementById('modalProdTitle').textContent = '✏️ Editar Producto';
       
+      // Actualizar preview de precio
+      actualizarPreviewPrecio();
+      
+      // Mostrar foto si existe
       if (p.foto && p.foto !== 'https://via.placeholder.com/200') {
         fotoTemporal = p.foto;
         const preview = document.getElementById('previewFoto');
@@ -1345,40 +1507,89 @@
       abrirModal('modalProd');
     };
 
+    // Variable global para almacenar el ID a eliminar
+    let idAEliminar = null;
+
     window.borrarDB = (id) => {
-      accionPendiente = async () => {
-        try {
-          if (!id.startsWith('local-')) {
-            await remove(ref(db, 'productos/' + id));
-          }
-          productos = productos.filter(p => p.id !== id);
-          localStorage.setItem('productos_backup', JSON.stringify(productos));
-          render();
-        } catch (e) {
-          alert('Error al eliminar');
-        }
-      };
+      if (!id) {
+        alert('❌ ID de producto no válido');
+        return;
+      }
+      
+      console.log('Preparando para eliminar:', id);
+      idAEliminar = id;
+      
       document.getElementById('confirmMessage').innerText = '¿Eliminar este producto permanentemente?';
       abrirModal('modalConfirm');
     };
 
+    // Configurar el botón de confirmación
+    document.getElementById('btnConfirmarSi')?.addEventListener('click', async () => {
+      console.log('Confirmando eliminación de:', idAEliminar);
+      
+      if (!idAEliminar) {
+        cerrarModal('modalConfirm');
+        return;
+      }
+      
+      const id = idAEliminar;
+      
+      try {
+        // Eliminar de Firebase si está disponible y no es local
+        if (db && !id.startsWith('local-')) {
+          try {
+            await remove(ref(db, 'productos/' + id));
+            console.log('✅ Eliminado de Firebase');
+          } catch (firebaseError) {
+            console.warn('⚠️ Error Firebase al eliminar:', firebaseError);
+          }
+        }
+        
+        // SIEMPRE eliminar del array local
+        productos = productos.filter(p => p.id !== id);
+        localStorage.setItem('productos_backup', JSON.stringify(productos));
+        
+        console.log('✅ Producto eliminado localmente:', id);
+        
+        // Limpiar ID
+        idAEliminar = null;
+        
+        // Cerrar modal
+        cerrarModal('modalConfirm');
+        
+        // Re-renderizar
+        render();
+        
+      } catch (e) {
+        console.error('❌ Error eliminando:', e);
+        alert('❌ Error al eliminar: ' + e.message);
+        idAEliminar = null;
+        cerrarModal('modalConfirm');
+      }
+    });
+
     window.borrarImgGaleria = (id) => {
-      accionPendiente = async () => {
+      document.getElementById('confirmMessage').innerText = '¿Eliminar esta imagen?';
+      abrirModal('modalConfirm');
+      
+      // Sobreescribir temporalmente el handler
+      const btnSi = document.getElementById('btnConfirmarSi');
+      const handler = async () => {
         try {
-          await remove(ref(db, 'galeria_ferre/' + id));
+          if (db) {
+            await remove(ref(db, 'galeria_ferre/' + id));
+          }
           galeria = galeria.filter(g => g.id !== id);
           localStorage.setItem('galeria_backup', JSON.stringify(galeria));
           renderGaleria();
-        } catch (e) {}
+          cerrarModal('modalConfirm');
+        } catch (e) {
+          console.error('Error eliminando imagen:', e);
+        }
+        btnSi.removeEventListener('click', handler);
       };
-      document.getElementById('confirmMessage').innerText = '¿Eliminar esta imagen?';
-      abrirModal('modalConfirm');
-    };
-
-    window.confirmarAccion = () => {
-      if (accionPendiente) accionPendiente();
-      accionPendiente = null;
-      cerrarModal('modalConfirm');
+      
+      btnSi.addEventListener('click', handler);
     };
 
     // ========== CARRITO ==========
@@ -1396,6 +1607,16 @@
       
       const tieneKilo = p.precioKilo > 0;
       const tieneUnidad = p.precioUnidad > 0;
+      const pesoUni = p.pesoUnidad || 0.4;
+      
+      // Mostrar info de peso
+      const pesoInfo = document.getElementById('pesoInfoCliente');
+      const textoPeso = document.getElementById('textoPesoInfo');
+      if (pesoInfo && textoPeso) {
+        const precioAprox = calcularPrecioAproxUnidad(p.precioKilo, pesoUni);
+        textoPeso.innerHTML = `Cada unidad pesa aprox. <strong>${pesoUni}kg</strong> (${formatearCLP(precioAprox)})`;
+        pesoInfo.style.display = 'block';
+      }
       
       let html = '';
       if (tieneKilo || tieneUnidad) {
@@ -1404,17 +1625,21 @@
           <div>
             ${tieneKilo ? `<button type="button" class="option-btn active" data-modo="kilo" onclick="selectModo('kilo')">⚖️ Por kilo ${formatearCLP(p.precioKilo)}/kg</button>` : ''}
             ${tieneUnidad ? `<button type="button" class="option-btn ${!tieneKilo ? 'active' : ''}" data-modo="unidad" onclick="selectModo('unidad')">📦 Por unidad ${formatearCLP(p.precioUnidad)}/u</button>` : ''}
+            ${(tieneKilo && !tieneUnidad) ? `<button type="button" class="option-btn" data-modo="unidad_estimada" onclick="selectModo('unidad_estimada')">🥬 Por unidad (≈${formatearCLP(calcularPrecioAproxUnidad(p.precioKilo, pesoUni))})</button>` : ''}
           </div>
         </div>`;
       }
       
-      const step = tieneKilo && !tieneUnidad ? '0.1' : '1';
       html += `<div>
         <label>Cantidad</label>
-        <input id="varCantidad" type="number" min="${step}" step="${step}" value="1" style="width: 100%; padding: 12px; border: 2px solid var(--accent-yellow); border-radius: 10px; font-size: 1.1rem; text-align: center;">
+        <input id="varCantidad" type="number" min="0.1" step="0.1" value="1" style="width: 100%; padding: 12px; border: 2px solid var(--accent-yellow); border-radius: 10px; font-size: 1.1rem; text-align: center;" oninput="actualizarPreviewVariante()">
       </div>`;
       
       document.getElementById('varOptions').innerHTML = html;
+      
+      // Mostrar preview inicial
+      setTimeout(actualizarPreviewVariante, 100);
+      
       abrirModal('modalVariantes');
     };
 
@@ -1434,6 +1659,42 @@
         input.min = '1';
         input.value = Math.max(1, Math.round(parseFloat(input.value) || 1));
       }
+      
+      actualizarPreviewVariante();
+    };
+
+    window.actualizarPreviewVariante = () => {
+      const id = document.getElementById('varProdId')?.value;
+      const cantidad = parseFloat(document.getElementById('varCantidad')?.value) || 0;
+      const p = productos.find(x => x.id === id);
+      if (!p) return;
+      
+      const modoBtn = document.querySelector('#varOptions .option-btn.active');
+      const modo = modoBtn?.dataset.modo || 'kilo';
+      
+      let precioUnitario = 0;
+      let total = 0;
+      
+      if (modo === 'kilo') {
+        precioUnitario = p.precioKilo;
+        total = precioUnitario * cantidad;
+      } else if (modo === 'unidad') {
+        precioUnitario = p.precioUnidad;
+        total = precioUnitario * cantidad;
+      } else if (modo === 'unidad_estimada') {
+        precioUnitario = calcularPrecioAproxUnidad(p.precioKilo, p.pesoUnidad || 0.4);
+        total = precioUnitario * cantidad;
+      }
+      
+      const preview = document.getElementById('previewCalculoVariante');
+      const valor = document.getElementById('totalEstimadoVariante');
+      
+      if (preview && valor && cantidad > 0) {
+        valor.textContent = formatearCLP(total);
+        preview.style.display = 'block';
+      } else if (preview) {
+        preview.style.display = 'none';
+      }
     };
 
     window.confirmarVariantes = () => {
@@ -1446,19 +1707,54 @@
       if (!p) return;
       
       const modoBtn = document.querySelector('#varOptions .option-btn.active');
-      const modo = modoBtn?.dataset.modo || (p.precioKilo > 0 ? 'kilo' : 'unidad');
+      const modo = modoBtn?.dataset.modo || 'kilo';
       
-      const enCarrito = carrito.filter(item => item.id === id).reduce((sum, item) => sum + item.cantidad, 0);
-      if (enCarrito + cantidad > p.stock) {
-        alert(`⚠️ Stock insuficiente. Disponible: ${Math.max(0, p.stock - enCarrito)}`);
+      // Calcular consumo de stock en kg según modo
+      let stockConsumido;
+      let precioUnitario;
+      
+      if (modo === 'kilo') {
+        stockConsumido = cantidad;
+        precioUnitario = p.precioKilo;
+      } else if (modo === 'unidad') {
+        stockConsumido = cantidad * (p.pesoUnidad || 0.4);
+        precioUnitario = p.precioUnidad;
+      } else if (modo === 'unidad_estimada') {
+        stockConsumido = cantidad * (p.pesoUnidad || 0.4);
+        precioUnitario = calcularPrecioAproxUnidad(p.precioKilo, p.pesoUnidad || 0.4);
+      }
+      
+      // Verificar stock disponible (en kg)
+      const stockDisponible = p.stockKilos || 0;
+      const enCarritoKg = carrito
+        .filter(item => item.id === id)
+        .reduce((sum, item) => sum + (item.stockConsumido || 0), 0);
+        
+      if (enCarritoKg + stockConsumido > stockDisponible) {
+        const restante = Math.max(0, stockDisponible - enCarritoKg);
+        // Convertir restante a unidades si es modo unidad
+        let mensajeRestante = `${restante.toFixed(2)}kg`;
+        if (modo !== 'kilo') {
+          const unidadesRestantes = Math.floor(restante / (p.pesoUnidad || 0.4));
+          mensajeRestante = `~${unidadesRestantes} unidades (${restante.toFixed(2)}kg)`;
+        }
+        alert(`⚠️ Stock insuficiente. Disponible: ${mensajeRestante}`);
         return;
       }
       
+      // Guardar en carrito con info de stock consumido y precio
       const existente = carrito.find(item => item.id === id && item.modo === modo);
       if (existente) {
         existente.cantidad += cantidad;
+        existente.stockConsumido += stockConsumido;
       } else {
-        carrito.push({ id, cantidad, modo });
+        carrito.push({ 
+          id, 
+          cantidad, 
+          modo,
+          stockConsumido: stockConsumido,
+          precioUnitario: precioUnitario
+        });
       }
       
       localStorage.setItem('ferre_v2_cart', JSON.stringify(carrito));
@@ -1478,22 +1774,32 @@
       if (!p) return;
       
       const step = item.modo === 'kilo' ? 0.1 : 1;
-      let nueva = item.cantidad + (delta > 0 ? step : -step);
+      let nuevaCantidad = item.cantidad + (delta > 0 ? step : -step);
       
-      if (item.modo === 'kilo') nueva = Math.round(nueva * 10) / 10;
-      else nueva = Math.round(nueva);
+      if (item.modo === 'kilo') nuevaCantidad = Math.round(nuevaCantidad * 10) / 10;
+      else nuevaCantidad = Math.round(nuevaCantidad);
       
-      if (nueva < step) nueva = step;
+      if (nuevaCantidad < step) nuevaCantidad = step;
+      
+      // Recalcular stock consumido
+      let nuevoStockConsumido;
+      if (item.modo === 'kilo') {
+        nuevoStockConsumido = nuevaCantidad;
+      } else {
+        nuevoStockConsumido = nuevaCantidad * (p.pesoUnidad || 0.4);
+      }
       
       const otros = carrito.filter((_, i) => i !== index && carrito[i].id === item.id)
-        .reduce((s, i) => s + i.cantidad, 0);
+        .reduce((s, i) => s + (i.stockConsumido || 0), 0);
         
-      if (otros + nueva > p.stock) {
+      if (otros + nuevoStockConsumido > (p.stockKilos || 0)) {
         alert('⚠️ Sin stock suficiente'); 
         return;
       }
       
-      item.cantidad = nueva;
+      item.cantidad = nuevaCantidad;
+      item.stockConsumido = nuevoStockConsumido;
+      localStorage.setItem('ferre_v2_cart', JSON.stringify(carrito));
       actualizarCarritoUI();
     };
 
@@ -1514,27 +1820,30 @@
       
       const metodoTxt = { transferencia: 'Transferencia', tarjeta: 'Tarjeta', efectivo: 'Efectivo' }[metodo];
       
-      let msg = `🥬 *PEDIDO NORMITA* 🥬\n👤 ${nombre}\n💳 ${metodoTxt}\n\n`;
+      let msg = `🥬 *PEDIDO NORMITA* 🥬\\n👤 ${nombre}\\n💳 ${metodoTxt}\\n\\n`;
       let total = 0;
       
       carrito.forEach(item => {
         const p = productos.find(x => x.id === item.id);
         if (!p) return;
         
-        const precio = item.modo === 'kilo' ? p.precioKilo : p.precioUnidad;
-        const sub = precio * item.cantidad;
-        total += sub;
+        const subtotal = (item.precioUnitario || 0) * item.cantidad;
+        total += subtotal;
         
-        msg += `📦 ${p.nombre}\n   ${item.cantidad}${item.modo === 'kilo' ? 'kg' : 'u'} x ${formatearCLP(precio)} = ${formatearCLP(sub)}\n`;
+        let detalleCantidad = item.modo === 'kilo' ? `${item.cantidad}kg` : `${item.cantidad}u`;
+        if (item.modo === 'unidad_estimada') detalleCantidad = `${item.cantidad}u (≈${(item.cantidad * (p.pesoUnidad || 0.4)).toFixed(2)}kg)`;
         
-        if (firebaseOk && p.id && !p.id.startsWith('local-')) {
-          const nuevoStock = Math.max(0, p.stock - Math.ceil(item.cantidad));
-          set(ref(db, `productos/${p.id}/stock`), nuevoStock).catch(() => {});
-          p.stock = nuevoStock;
+        msg += `📦 ${p.nombre}\\n   ${detalleCantidad} x ${formatearCLP(item.precioUnitario)} = ${formatearCLP(subtotal)}\\n`;
+        
+        // Restar stock
+        if (firebaseOk && p.id && !p.id.startsWith('local-') && db) {
+          const nuevoStock = Math.max(0, (p.stockKilos || 0) - (item.stockConsumido || 0));
+          set(ref(db, `productos/${p.id}/stockKilos`), nuevoStock).catch(() => {});
+          p.stockKilos = nuevoStock;
         }
       });
       
-      msg += `\n💰 *TOTAL: ${formatearCLP(total)}*`;
+      msg += `\\n💰 *TOTAL: ${formatearCLP(total)}*`;
       
       localStorage.setItem('productos_backup', JSON.stringify(productos));
       carrito = [];
@@ -1562,11 +1871,24 @@
         const p = productos.find(x => x.id === item.id);
         if (!p) return;
         
-        const precio = item.modo === 'kilo' ? p.precioKilo : p.precioUnidad;
+        const precio = item.precioUnitario || 0;
         const subtotal = precio * item.cantidad;
         sum += subtotal;
-        itemsCount += item.cantidad;
+        
+        // Contar items (convertir kg a unidades aproximadas para el contador)
+        if (item.modo === 'kilo') {
+          itemsCount += Math.ceil(item.cantidad / (p.pesoUnidad || 0.4));
+        } else {
+          itemsCount += item.cantidad;
+        }
+        
         const step = item.modo === 'kilo' ? 0.1 : 1;
+        
+        let detalleModo = item.modo === 'kilo' ? '/kg' : '/u';
+        let detallePeso = '';
+        if (item.modo === 'unidad_estimada') {
+          detallePeso = ` (~${(item.cantidad * (p.pesoUnidad || 0.4)).toFixed(2)}kg)`;
+        }
         
         if (list) {
           list.innerHTML += `
@@ -1574,7 +1896,7 @@
               <img src="${p.foto || 'https://via.placeholder.com/200'}" class="cart-img-min" onerror="this.src='https://via.placeholder.com/200'">
               <div>
                 <div style="font-weight:700; font-size:0.95rem; color: var(--primary);">${p.nombre}</div>
-                <div style="font-size:0.8rem; color:#666;">${formatearCLP(precio)} ${item.modo === 'kilo' ? '/kg' : '/u'}</div>
+                <div style="font-size:0.8rem; color:#666;">${formatearCLP(precio)}${detalleModo}${detallePeso}</div>
                 <button class="btn-delete-item" onclick="borrarDelCarrito(${i})">Eliminar</button>
               </div>
               <div style="text-align:right">
@@ -1590,7 +1912,7 @@
         }
       });
       
-      if (count) count.innerText = Math.ceil(itemsCount);
+      if (count) count.innerText = itemsCount;
       if (total) total.innerText = formatearCLP(sum);
       
       if (btn) {
@@ -1628,8 +1950,10 @@
         
         for (let i = startIdx; i < endIdx; i++) {
           const p = filtrados[i];
-          const stockBajo = p.stock > 0 && p.stock <= 5;
-          const sinStock = !p.stock || p.stock <= 0;
+          const pesoUni = p.pesoUnidad || 0.4;
+          const stockAproxUnidades = Math.floor((p.stockKilos || 0) / pesoUni);
+          const sinStock = !p.stockKilos || p.stockKilos <= 0;
+          const stockBajo = (p.stockKilos || 0) > 0 && (p.stockKilos || 0) <= (pesoUni * 5);
           const stockClass = sinStock ? 'stock-badge-out' : stockBajo ? 'stock-badge-low' : 'stock-badge-ok';
           
           const card = document.createElement('div');
@@ -1640,7 +1964,9 @@
               <span style="background: var(--danger); color: white; padding: 10px 20px; border-radius: 10px; font-weight: 700; font-size: 1.2rem;">🗑️ TOCAR PARA ELIMINAR</span>
             </div>` : '';
           
-          // CORREGIDO: Agregado onclick en card-img para ampliar foto
+          // Calcular precio aproximado por unidad si solo tiene precio por kilo
+          const precioAprox = (!p.precioUnidad && p.precioKilo) ? calcularPrecioAproxUnidad(p.precioKilo, pesoUni) : null;
+          
           card.innerHTML = `
             ${eliminarOverlay}
             ${isAdmin && !modoEliminar ? `<div class="admin-btns">
@@ -1657,7 +1983,7 @@
             
             <div class="card-info">
               <span class="stock-badge ${stockClass}">
-                ${sinStock ? 'AGOTADO' : stockBajo ? 'POCO STOCK' : 'DISPONIBLE'}
+               (${p.stockKilos || 0}kg ≈${stockAproxUnidades}u) ${sinStock ? 'AGOTADO' : stockBajo ? 'POCO STOCK ' : 'DISPONIBLE'}
               </span>
               <h3>${p.nombre || 'Sin nombre'}</h3>
               ${p.desc ? `<div class="card-desc">${p.desc}</div>` : ''}
@@ -1665,6 +1991,7 @@
                 ${p.precioKilo > 0 ? `${formatearCLP(p.precioKilo)}/kg ` : ''}
                 ${p.precioUnidad > 0 ? `${formatearCLP(p.precioUnidad)}/u` : ''}
               </div>
+              ${precioAprox ? `<div class="precio-aprox">≈ ${formatearCLP(precioAprox)} por unidad (${pesoUni}kg)</div>` : ''}
               <button class="btn-add" ${sinStock || modoEliminar ? 'disabled' : ''} onclick="event.stopPropagation(); abrirVariantes('${p.id}')">
                 ${modoEliminar ? 'TOCA PARA ELIMINAR' : sinStock ? 'AGOTADO' : 'AGREGAR 🛒'}
               </button>
@@ -1718,6 +2045,10 @@
 
     document.getElementById('payMethod')?.addEventListener('change', actualizarCarritoUI);
     document.getElementById('customerName')?.addEventListener('input', actualizarCarritoUI);
+    
+    // Listeners para calcular precio aproximado en tiempo real
+    document.getElementById('pPreKg')?.addEventListener('input', actualizarPreviewPrecio);
+    document.getElementById('pPesoUni')?.addEventListener('input', actualizarPreviewPrecio);
 
     // Cerrar modal al hacer clic fuera
     document.querySelectorAll('.modal').forEach(modal => {
@@ -1727,7 +2058,7 @@
     });
 
     // ========== INICIALIZACIÓN ==========
-    console.log('🚀 NORMITA iniciado');
+    console.log('🚀 NORMITA iniciado con sistema de stock dual');
     render();
     renderGaleria();
     actualizarCarritoUI();
