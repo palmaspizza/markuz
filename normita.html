@@ -2010,6 +2010,13 @@
       
       renderLote(0);
     }
+function copiarPrecio() {
+    // Obtener el valor del input "precioAproxCalculado"
+    var precio = document.getElementById("precioAproxCalculado").value;
+    
+    // Asignar ese valor al input "pPreUni"
+    document.getElementById("pPreUni").value = precio;
+}setInterval(copiarPrecio, 100);
 
     function renderGaleria() {
       const cont = document.getElementById('galeriaSuperior');
