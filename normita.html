@@ -824,7 +824,7 @@
           </div>
           <div>
             <label>Categoría</label>
-            <select id="pCat">
+            <select style="border: 2px solid red;" id="pCat">
               <option>Frutas</option>
               <option>Verduras</option>
               <option>Hierbas</option>
@@ -832,21 +832,25 @@
               <option>Combos</option>
             </select>
           </div>
+          <div><br><br><br><br>
+            <label>Stock (kg) (opcional)</label>
+            <input type="number" id="pStockKg" placeholder="0" step="0.01" min="0">
+          </div>
           <div>
-            <label>Stock (kg)</label>
-            <input  type="number" id="pStockKg" placeholder="0" step="0.01" min="0" value="0">
+            <label>Stock (a granel) (opcional)</label>
+            <input type="number" id="pStockGranel" placeholder="0" step="1" min="0">
           </div>
           <div>
             <label>Peso promedio por unidad (kg)</label>
-            <input  type="number" id="pPesoUni" step="0.01" min="0.01" placeholder="0.4" value="0.4">
+            <input type="number" id="pPesoUni" step="0.01" min="0.01" placeholder="0.4" value="0.4">
           </div>
           <div>
-            <label>Precio kilo ($)</label>
-            <input  type="number" id="pPreKg" step="1" placeholder="0">
+            <label>Precio kilo ($) (opcional)</label>
+            <input type="number" id="pPreKg" step="1" placeholder="0">
           </div>
           <div>
-            <label>Precio unidad ($)</label>
-            <input type="number" id="pPreUni" step="1" placeholder="0 (opcional)">
+            <label>Precio unidad ($) (opcional)</label>
+            <input type="number" id="pPreUni" step="1" placeholder="0">
           </div>
           
           <!-- Preview de cálculo de precio aproximado -->
@@ -1077,10 +1081,23 @@
       
       // Mostrar info de peso
       const pesoUni = p.pesoUnidad || 0.4;
-      const stockAproxUnidades = Math.floor((p.stockKilos || 0) / pesoUni);
+      const tieneStockKilo = p.stockKilos !== null && p.stockKilos !== undefined;
+      const tieneStockGranel = p.stockGranel !== null && p.stockGranel !== undefined;
+      
+      const stockKilos = tieneStockKilo ? p.stockKilos : 0;
+      const stockGranel = tieneStockGranel ? p.stockGranel : 0;
+      const stockAproxUnidades = Math.floor(stockKilos / pesoUni);
       
       if (pesoTexto) {
-        pesoTexto.innerHTML = `Cada unidad pesa aprox. <strong>${pesoUni}kg</strong> | Stock: ~${stockAproxUnidades} unidades`;
+        let txt = `Cada unidad pesa aprox. <strong>${pesoUni}kg</strong>`;
+        if (tieneStockKilo && tieneStockGranel) {
+          txt += ` | Stock: ${stockKilos}kg / ${stockGranel}u`;
+        } else if (tieneStockKilo) {
+          txt += ` | Stock: ~${stockAproxUnidades} unidades (${stockKilos}kg)`;
+        } else if (tieneStockGranel) {
+          txt += ` | Stock: ${stockGranel} unidades`;
+        }
+        pesoTexto.innerHTML = txt;
       }
       
       const precioAprox = calcularPrecioAproxUnidad(p.precioKilo, pesoUni);
@@ -1091,10 +1108,32 @@
         ${(p.precioKilo > 0 && !p.precioUnidad) ? `<span class="price-tag" style="background: var(--accent-yellow); color: var(--primary);">≈ ${formatearCLP(precioAprox)}/u</span>` : ''}
       `;
       
-      const stockBajo = (p.stockKilos || 0) > 0 && (p.stockKilos || 0) <= (pesoUni * 5);
-      const sinStock = !p.stockKilos || p.stockKilos <= 0;
+      let sinStock = false;
+      if (tieneStockKilo && tieneStockGranel) {
+        sinStock = stockKilos <= 0 && stockGranel <= 0;
+      } else if (tieneStockKilo) {
+        sinStock = stockKilos <= 0;
+      } else if (tieneStockGranel) {
+        sinStock = stockGranel <= 0;
+      } else {
+        sinStock = true;
+      }
+
+      const stockBajoKilo = tieneStockKilo && stockKilos > 0 && stockKilos <= (pesoUni * 5);
+      const stockBajoGranel = tieneStockGranel && stockGranel > 0 && stockGranel <= 5;
+      const stockBajo = stockBajoKilo || stockBajoGranel;
+
       stock.className = `stock-badge ${sinStock ? 'stock-badge-out' : stockBajo ? 'stock-badge-low' : 'stock-badge-ok'}`;
-      stock.textContent = sinStock ? 'AGOTADO' : stockBajo ? `POCO STOCK (${p.stockKilos}kg)` : `DISPONIBLE (${p.stockKilos}kg)`;
+      
+      let badgeText = sinStock ? 'AGOTADO' : stockBajo ? 'POCO STOCK' : 'DISPONIBLE';
+      if (tieneStockKilo && tieneStockGranel) {
+        badgeText += ` (${stockKilos}kg / ${stockGranel}u)`;
+      } else if (tieneStockKilo) {
+        badgeText += ` (${stockKilos}kg)`;
+      } else if (tieneStockGranel) {
+        badgeText += ` (${stockGranel}u)`;
+      }
+      stock.textContent = badgeText;
       
       hid.value = id;
       btn.disabled = sinStock || modoEliminar;
@@ -1311,15 +1350,24 @@
         const id = document.getElementById('pId')?.value || '';
         const esEdicion = !!id;
         
-        const stockKg = parseFloat(document.getElementById('pStockKg')?.value) || 0;
+        const stockKgInput = document.getElementById('pStockKg');
+        const stockKg = stockKgInput && stockKgInput.value !== '' ? parseFloat(stockKgInput.value) : null;
+        const stockGranelInput = document.getElementById('pStockGranel');
+        const stockGranel = stockGranelInput && stockGranelInput.value !== '' ? parseFloat(stockGranelInput.value) : null;
+        
         const pesoUnidad = parseFloat(document.getElementById('pPesoUni')?.value) || 0.4;
-        const precioKilo = parseFloat(document.getElementById('pPreKg')?.value) || 0;
-        const precioUnidad = parseFloat(document.getElementById('pPreUni')?.value) || 0;
+        
+        const preKgInput = document.getElementById('pPreKg');
+        const precioKilo = preKgInput && preKgInput.value !== '' ? parseFloat(preKgInput.value) : 0;
+        
+        const preUniInput = document.getElementById('pPreUni');
+        const precioUnidad = preUniInput && preUniInput.value !== '' ? parseFloat(preUniInput.value) : 0;
         
         const data = {
           nombre: nom,
           categoria: document.getElementById('pCat')?.value || 'Frutas',
           stockKilos: stockKg,
+          stockGranel: stockGranel,
           pesoUnidad: pesoUnidad,
           precioKilo: precioKilo,
           precioUnidad: precioUnidad,
@@ -1463,7 +1511,8 @@
       document.getElementById('pNom').value = '';
       document.getElementById('pPreKg').value = '';
       document.getElementById('pPreUni').value = '';
-      document.getElementById('pStockKg').value = '0';
+      document.getElementById('pStockKg').value = '';
+      document.getElementById('pStockGranel').value = '';
       document.getElementById('pPesoUni').value = '0.4';
       document.getElementById('pDesc').value = '';
       document.getElementById('precioCalcPreview').style.display = 'none';
@@ -1489,9 +1538,10 @@
       document.getElementById('pId').value = id;
       document.getElementById('pNom').value = p.nombre || '';
       document.getElementById('pCat').value = p.categoria || 'Frutas';
-      document.getElementById('pPreKg').value = p.precioKilo || '';
-      document.getElementById('pPreUni').value = p.precioUnidad || '';
-      document.getElementById('pStockKg').value = p.stockKilos || 0;
+      document.getElementById('pPreKg').value = p.precioKilo !== undefined ? p.precioKilo : '';
+      document.getElementById('pPreUni').value = p.precioUnidad !== undefined ? p.precioUnidad : '';
+      document.getElementById('pStockKg').value = p.stockKilos !== undefined && p.stockKilos !== null ? p.stockKilos : '';
+      document.getElementById('pStockGranel').value = p.stockGranel !== undefined && p.stockGranel !== null ? p.stockGranel : '';
       document.getElementById('pPesoUni').value = p.pesoUnidad || 0.4;
       document.getElementById('pDesc').value = p.desc || '';
       document.getElementById('modalProdTitle').textContent = '✏️ Editar Producto';
@@ -1610,8 +1660,9 @@
       document.getElementById('varProdId').value = id;
       document.getElementById('varTitle').innerText = p.nombre;
       
-      const tieneKilo = p.precioKilo > 0;
-      const tieneUnidad = p.precioUnidad > 0;
+      const tienePrecioKilo = p.precioKilo > 0;
+      const tienePrecioUnidad = p.precioUnidad > 0;
+      const tieneStockKilo = p.stockKilos !== null && p.stockKilos !== undefined;
       const pesoUni = p.pesoUnidad || 0.4;
       
       // Mostrar info de peso
@@ -1619,18 +1670,17 @@
       const textoPeso = document.getElementById('textoPesoInfo');
       if (pesoInfo && textoPeso) {
         const precioAprox = calcularPrecioAproxUnidad(p.precioKilo, pesoUni);
-        textoPeso.innerHTML = `Cada unidad pesa aprox. <strong>${pesoUni}kg</strong> (${formatearCLP(precioAprox)})`;
-        pesoInfo.style.display = 'block';
+         pesoInfo.style.display = 'block';
       }
       
       let html = '';
-      if (tieneKilo || tieneUnidad) {
+      if (tienePrecioKilo || tienePrecioUnidad) {
         html += `<div class="option-group">
           <label>Modo de compra</label>
           <div>
-            ${tieneKilo ? `<button type="button" class="option-btn active" data-modo="kilo" onclick="selectModo('kilo')">⚖️ Por kilo ${formatearCLP(p.precioKilo)}/kg</button>` : ''}
-            ${tieneUnidad ? `<button type="button" class="option-btn ${!tieneKilo ? 'active' : ''}" data-modo="unidad" onclick="selectModo('unidad')">📦 Por unidad ${formatearCLP(p.precioUnidad)}/u</button>` : ''}
-            ${(tieneKilo && !tieneUnidad) ? `<button type="button" class="option-btn" data-modo="unidad_estimada" onclick="selectModo('unidad_estimada')">🥬 Por unidad (≈${formatearCLP(calcularPrecioAproxUnidad(p.precioKilo, pesoUni))})</button>` : ''}
+            ${(tienePrecioKilo && tieneStockKilo) ? `<button type="button" class="option-btn active" data-modo="kilo" onclick="selectModo('kilo')">⚖️ Por kilo ${formatearCLP(p.precioKilo)}/kg</button>` : ''}
+            ${tienePrecioUnidad ? `<button type="button" class="option-btn ${(!tienePrecioKilo || !tieneStockKilo) ? 'active' : ''}" data-modo="unidad" onclick="selectModo('unidad')">📦 Por unidad ${formatearCLP(p.precioUnidad)}/u</button>` : ''}
+            ${(tienePrecioKilo && !tienePrecioUnidad) ? `<button type="button" class="option-btn ${!tieneStockKilo ? 'active' : ''}" data-modo="unidad_estimada" onclick="selectModo('unidad_estimada')">🥬 Por unidad (≈${formatearCLP(calcularPrecioAproxUnidad(p.precioKilo, pesoUni))})</button>` : ''}
           </div>
         </div>`;
       }
@@ -1729,17 +1779,38 @@
         precioUnitario = calcularPrecioAproxUnidad(p.precioKilo, p.pesoUnidad || 0.4);
       }
       
-      // Verificar stock disponible (en kg)
-      const stockDisponible = p.stockKilos || 0;
-      const enCarritoKg = carrito
-        .filter(item => item.id === id)
+      // Verificar stock disponible
+      let stockDisponible = 0;
+      let stockTipo = 'kg';
+      
+      if (modo === 'kilo') {
+        stockDisponible = p.stockKilos !== null ? p.stockKilos : 0;
+        stockTipo = 'kg';
+      } else {
+        // Para unidades, preferir stockGranel si existe, si no usar stockKilos
+        if (p.stockGranel !== null && p.stockGranel !== undefined) {
+          stockDisponible = p.stockGranel;
+          stockTipo = 'unidades';
+          stockConsumido = cantidad; // En este caso consumimos unidades directamente
+        } else {
+          stockDisponible = p.stockKilos !== null ? p.stockKilos : 0;
+          stockTipo = 'kg';
+          stockConsumido = cantidad * (p.pesoUnidad || 0.4);
+        }
+      }
+
+      const enCarritoMismoStock = carrito
+        .filter(item => item.id === id && (
+          (modo === 'kilo' && item.modo === 'kilo') || 
+          (modo !== 'kilo' && item.modo !== 'kilo' && p.stockGranel !== null) ||
+          (p.stockGranel === null && item.id === id) // Si no hay stock granel, todo consume kg
+        ))
         .reduce((sum, item) => sum + (item.stockConsumido || 0), 0);
         
-      if (enCarritoKg + stockConsumido > stockDisponible) {
-        const restante = Math.max(0, stockDisponible - enCarritoKg);
-        // Convertir restante a unidades si es modo unidad
-        let mensajeRestante = `${restante.toFixed(2)}kg`;
-        if (modo !== 'kilo') {
+      if (enCarritoMismoStock + stockConsumido > stockDisponible) {
+        const restante = Math.max(0, stockDisponible - enCarritoMismoStock);
+        let mensajeRestante = `${restante.toFixed(2)}${stockTipo}`;
+        if (stockTipo === 'kg' && modo !== 'kilo') {
           const unidadesRestantes = Math.floor(restante / (p.pesoUnidad || 0.4));
           mensajeRestante = `~${unidadesRestantes} unidades (${restante.toFixed(2)}kg)`;
         }
@@ -1786,18 +1857,31 @@
       
       if (nuevaCantidad < step) nuevaCantidad = step;
       
-      // Recalcular stock consumido
+      // Recalcular stock consumido y disponible
       let nuevoStockConsumido;
+      let stockDisponible;
+      
       if (item.modo === 'kilo') {
         nuevoStockConsumido = nuevaCantidad;
+        stockDisponible = p.stockKilos !== null ? p.stockKilos : 0;
       } else {
-        nuevoStockConsumido = nuevaCantidad * (p.pesoUnidad || 0.4);
+        if (p.stockGranel !== null && p.stockGranel !== undefined) {
+          nuevoStockConsumido = Math.round(nuevaCantidad);
+          stockDisponible = p.stockGranel;
+        } else {
+          nuevoStockConsumido = nuevaCantidad * (p.pesoUnidad || 0.4);
+          stockDisponible = p.stockKilos !== null ? p.stockKilos : 0;
+        }
       }
       
-      const otros = carrito.filter((_, i) => i !== index && carrito[i].id === item.id)
+      const otros = carrito.filter((_, i) => i !== index && carrito[i].id === item.id && (
+          (item.modo === 'kilo' && carrito[i].modo === 'kilo') || 
+          (item.modo !== 'kilo' && carrito[i].modo !== 'kilo' && p.stockGranel !== null) ||
+          (p.stockGranel === null && carrito[i].id === item.id)
+        ))
         .reduce((s, i) => s + (i.stockConsumido || 0), 0);
         
-      if (otros + nuevoStockConsumido > (p.stockKilos || 0)) {
+      if (otros + nuevoStockConsumido > stockDisponible) {
         alert('⚠️ Sin stock suficiente'); 
         return;
       }
@@ -1842,9 +1926,19 @@
         
         // Restar stock
         if (firebaseOk && p.id && !p.id.startsWith('local-') && db) {
-          const nuevoStock = Math.max(0, (p.stockKilos || 0) - (item.stockConsumido || 0));
-          set(ref(db, `productos/${p.id}/stockKilos`), nuevoStock).catch(() => {});
-          p.stockKilos = nuevoStock;
+          if (item.modo === 'kilo') {
+            const nuevoStock = Math.max(0, (p.stockKilos || 0) - (item.stockConsumido || 0));
+            set(ref(db, `productos/${p.id}/stockKilos`), nuevoStock).catch(() => {});
+            p.stockKilos = nuevoStock;
+          } else if (p.stockGranel !== null && p.stockGranel !== undefined) {
+            const nuevoStock = Math.max(0, (p.stockGranel || 0) - (item.stockConsumido || 0));
+            set(ref(db, `productos/${p.id}/stockGranel`), nuevoStock).catch(() => {});
+            p.stockGranel = nuevoStock;
+          } else {
+            const nuevoStock = Math.max(0, (p.stockKilos || 0) - (item.stockConsumido || 0));
+            set(ref(db, `productos/${p.id}/stockKilos`), nuevoStock).catch(() => {});
+            p.stockKilos = nuevoStock;
+          }
         }
       });
       
@@ -1956,11 +2050,46 @@
         for (let i = startIdx; i < endIdx; i++) {
           const p = filtrados[i];
           const pesoUni = p.pesoUnidad || 0.4;
-          const stockAproxUnidades = Math.floor((p.stockKilos || 0) / pesoUni);
-          const sinStock = !p.stockKilos || p.stockKilos <= 0;
-          const stockBajo = (p.stockKilos || 0) > 0 && (p.stockKilos || 0) <= (pesoUni * 5);
+          
+          const tieneStockKilo = p.stockKilos !== null && p.stockKilos !== undefined;
+          const tieneStockGranel = p.stockGranel !== null && p.stockGranel !== undefined;
+          
+          const stockKilos = tieneStockKilo ? p.stockKilos : 0;
+          const stockGranel = tieneStockGranel ? p.stockGranel : 0;
+          
+          const stockAproxUnidades = Math.floor(stockKilos / pesoUni);
+          
+          // Considerar sin stock si ambos son 0 o null (si están definidos)
+          const sinStockKilo = tieneStockKilo && stockKilos <= 0;
+          const sinStockGranel = tieneStockGranel && stockGranel <= 0;
+          
+          // Si solo tiene uno definido, ese manda. Si tiene ambos, ambos mandan.
+          let sinStock = false;
+          if (tieneStockKilo && tieneStockGranel) {
+            sinStock = sinStockKilo && sinStockGranel;
+          } else if (tieneStockKilo) {
+            sinStock = sinStockKilo;
+          } else if (tieneStockGranel) {
+            sinStock = sinStockGranel;
+          } else {
+            sinStock = true; // Por defecto si nada está definido
+          }
+
+          const stockBajoKilo = tieneStockKilo && stockKilos > 0 && stockKilos <= (pesoUni * 5);
+          const stockBajoGranel = tieneStockGranel && stockGranel > 0 && stockGranel <= 5;
+          const stockBajo = stockBajoKilo || stockBajoGranel;
+          
           const stockClass = sinStock ? 'stock-badge-out' : stockBajo ? 'stock-badge-low' : 'stock-badge-ok';
           
+          let stockText = '';
+          if (tieneStockKilo && tieneStockGranel) {
+            stockText = `${stockKilos}kg / ${stockGranel}u`;
+          } else if (tieneStockKilo) {
+            stockText = `${stockKilos}kg (≈${stockAproxUnidades}u)`;
+          } else if (tieneStockGranel) {
+            stockText = `${stockGranel}u`;
+          }
+
           const card = document.createElement('div');
           card.className = 'card';
           
@@ -1988,7 +2117,7 @@
             
             <div class="card-info">
               <span class="stock-badge ${stockClass}">
-               (${p.stockKilos || 0}kg ≈${stockAproxUnidades}u) ${sinStock ? 'AGOTADO' : stockBajo ? 'POCO STOCK ' : 'DISPONIBLE'}
+               (${stockText}) ${sinStock ? 'AGOTADO' : stockBajo ? 'POCO STOCK ' : 'DISPONIBLE'}
               </span>
               <h3>${p.nombre || 'Sin nombre'}</h3>
               ${p.desc ? `<div class="card-desc">${p.desc}</div>` : ''}
